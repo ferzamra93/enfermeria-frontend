@@ -27,47 +27,59 @@ function LoginForm({ error, onSubmit }: LoginFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h1>Iniciar sesión</h1>
-
-      <div>
-        <label htmlFor="carnet">Carnet de identidad</label>
-
-        <input
-          id="carnet"
-          name="carnet"
-          type="text"
-          value={carnet}
-          onChange={(event) => setCarnet(event.target.value)}
-          placeholder="Ingrese su carnet"
-          autoComplete="username"
-          required
-        />
+    <section className="login-card" aria-labelledby="login-title">
+      <div className="login-badge" aria-hidden="true">
+        +
       </div>
 
-      <div>
-        <label htmlFor="password">Contraseña</label>
+      <p className="eyebrow">Acceso seguro</p>
+      <h1 id="login-title">Iniciar sesión</h1>
+      <p className="login-copy">
+        Ingresa con tu carnet y contraseña para acceder al sistema de enfermería.
+      </p>
 
-        <input
-          id="password"
-          name="password"
-          type="password"
-          value={password}
-          onChange={(event) => setPassword(event.target.value)}
-          placeholder="Ingrese su contraseña"
-          autoComplete="current-password"
-          required
-        />
-      </div>
+      <form className="login-form" onSubmit={handleSubmit}>
+        <div className="form-field">
+          <label htmlFor="carnet">Carnet de identidad</label>
 
-      {error && (
-        <p role="alert" aria-live="polite">
-          {error}
-        </p>
-      )}
+          <input
+            id="carnet"
+            name="carnet"
+            type="text"
+            value={carnet}
+            onChange={(event) => setCarnet(event.target.value)}
+            placeholder="Ingrese su carnet"
+            autoComplete="username"
+            required
+          />
+        </div>
 
-      <button type="submit">Ingresar</button>
-    </form>
+        <div className="form-field">
+          <label htmlFor="password">Contraseña</label>
+
+          <input
+            id="password"
+            name="password"
+            type="password"
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+            placeholder="Ingrese su contraseña"
+            autoComplete="current-password"
+            required
+          />
+        </div>
+
+        {error && (
+          <p className="login-error" role="alert" aria-live="polite">
+            {error}
+          </p>
+        )}
+
+        <button className="primary-button" type="submit">
+          Ingresar
+        </button>
+      </form>
+    </section>
   );
 }
 
