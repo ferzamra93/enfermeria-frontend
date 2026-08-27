@@ -1,8 +1,49 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import type { FormEventHandler } from "react";
 
 import { authRepository } from "../repositories/authRepository";
 
-const students = [
+const DASHBOARD_STORAGE_KEY = "medical_dashboard_draft";
+
+interface Student {
+  id: string;
+  name: string;
+  age: number;
+  grade: string;
+  allergies: string;
+  lastVisit: string;
+}
+
+interface Appointment {
+  time: string;
+  student: string;
+  reason: string;
+  status: string;
+}
+
+interface MedicationReport {
+  medicine: string;
+  doses: number;
+  lastAdministered: string;
+}
+
+interface ClinicalEntry {
+  id: string;
+  studentId: string;
+  studentName: string;
+  date: string;
+  reason: string;
+  note: string;
+}
+
+interface DashboardDraft {
+  students: Student[];
+  appointments: Appointment[];
+  medicationReports: MedicationReport[];
+  clinicalEntries: ClinicalEntry[];
+}
+
+const initialStudents: Student[] = [
   {
     id: "EST-001",
     name: "María Fernanda López",
@@ -29,7 +70,7 @@ const students = [
   },
 ];
 
-const appointments = [
+const initialAppointments: Appointment[] = [
   {
     time: "08:30",
     student: "María Fernanda López",
@@ -50,7 +91,7 @@ const appointments = [
   },
 ];
 
-const medicationReports = [
+const initialMedicationReports: MedicationReport[] = [
   {
     medicine: "Paracetamol 500 mg",
     doses: 18,
@@ -68,17 +109,153 @@ const medicationReports = [
   },
 ];
 
+const getInitialDraft = (): DashboardDraft => {
+  const fallbackDraft: DashboardDraft = {
+    students: initialStudents,
+    appointments: initialAppointments,
+    medicationReports: initialMedicationReports,
+    clinicalEntries: [],
+  };
+
+  try {
+    const storedDraft = sessionStorage.getItem(DASHBOARD_STORAGE_KEY);
+
+    if (!storedDraft) {
+      return fallbackDraft;
+    }
+
+    return JSON.parse(storedDraft) as DashboardDraft;
+  } catch (error) {
+    console.error("Error al leer los datos temporales del panel médico:", error);
+    return fallbackDraft;
+  }
+};
+
+const getToday = () => new Date().toISOString().slice(0, 10);
+const getCurrentTime = () => new Date().toTimeString().slice(0, 5);
+const getCurrentDateTime = () => new Date().toISOString().slice(0, 16).replace("T", " ");
+
 interface HomePageProps {
   onLogout: () => void;
 }
 
 function HomePage({ onLogout }: HomePageProps) {
-  const [selectedStudent, setSelectedStudent] = useState(students[0]);
+  const [dashboardDraft, setDashboardDraft] = useState(getInitialDraft);
+  const [selectedStudentId, setSelectedStudentId] = useState(
+    dashboardDraft.students[0]?.id ?? "",
+  );
   const user = authRepository.getCurrentUser();
+
+  const selectedStudent = useMemo(
+    () =>
+      dashboardDraft.students.find((student) => student.id === selectedStudentId) ??
+      dashboardDraft.students[0],
+    [dashboardDraft.students, selectedStudentId],
+  );
+
+  const selectedClinicalEntries = dashboardDraft.clinicalEntries.filter(
+    (entry) => entry.studentId === selectedStudent?.id,
+  );
+
+  useEffect(() => {
+    sessionStorage.setItem(DASHBOARD_STORAGE_KEY, JSON.stringify(dashboardDraft));
+  }, [dashboardDraft]);
 
   const handleLogout = () => {
     authRepository.logout();
     onLogout();
+  };
+
+  const handleStudentSubmit: FormEventHandler<HTMLFormElement> = (event) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const name = String(formData.get("name") ?? "").trim();
+    const age = Number(formData.get("age") ?? 0);
+    const grade = String(formData.get("grade") ?? "").trim();
+    const allergies = String(formData.get("allergies") ?? "").trim();
+
+    if (!name || !age || !grade) {
+      return;
+    }
+
+    const newStudent: Student = {
+      id: `EST-${String(dashboardDraft.students.length + 1).padStart(3, "0")}`,
+      name,
+      age,
+      grade,
+      allergies: allergies || "Ninguna registrada",
+      lastVisit: getToday(),
+    };
+
+    setDashboardDraft((currentDraft) => ({
+      ...currentDraft,
+      students: [...currentDraft.students, newStudent],
+    }));
+    setSelectedStudentId(newStudent.id);
+    event.currentTarget.reset();
+  };
+
+  const handleClinicalSubmit: FormEventHandler<HTMLFormElement> = (event) => {
+    event.preventDefault();
+
+    if (!selectedStudent) {
+      return;
+    }
+
+    const formData = new FormData(event.currentTarget);
+    const reason = String(formData.get("reason") ?? "").trim();
+    const note = String(formData.get("note") ?? "").trim();
+
+    if (!reason || !note) {
+      return;
+    }
+
+    const newEntry: ClinicalEntry = {
+      id: crypto.randomUUID(),
+      studentId: selectedStudent.id,
+      studentName: selectedStudent.name,
+      date: getToday(),
+      reason,
+      note,
+    };
+
+    setDashboardDraft((currentDraft) => ({
+      ...currentDraft,
+      students: currentDraft.students.map((student) =>
+        student.id === selectedStudent.id ? { ...student, lastVisit: getToday() } : student,
+      ),
+      appointments: [
+        ...currentDraft.appointments,
+        {
+          time: getCurrentTime(),
+          student: selectedStudent.name,
+          reason,
+          status: "Registrada",
+        },
+      ],
+      clinicalEntries: [newEntry, ...currentDraft.clinicalEntries],
+    }));
+    event.currentTarget.reset();
+  };
+
+  const handleMedicationSubmit: FormEventHandler<HTMLFormElement> = (event) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const medicine = String(formData.get("medicine") ?? "").trim();
+    const doses = Number(formData.get("doses") ?? 0);
+
+    if (!medicine || !doses) {
+      return;
+    }
+
+    setDashboardDraft((currentDraft) => ({
+      ...currentDraft,
+      medicationReports: [
+        { medicine, doses, lastAdministered: getCurrentDateTime() },
+        ...currentDraft.medicationReports,
+      ],
+    }));
+    event.currentTarget.reset();
   };
 
   return (
@@ -91,6 +268,7 @@ function HomePage({ onLogout }: HomePageProps) {
             Registre estudiantes, documente motivos de atención, administre el
             historial clínico por paciente y consulte reportes de medicamentos.
           </p>
+          <small>Los datos nuevos se guardan temporalmente en este navegador.</small>
         </div>
 
         {user && (
@@ -107,19 +285,21 @@ function HomePage({ onLogout }: HomePageProps) {
 
       <section className="metric-grid" aria-label="Resumen de actividad">
         <article>
-          <span>{students.length}</span>
+          <span>{dashboardDraft.students.length}</span>
           <p>Estudiantes registrados</p>
         </article>
         <article>
-          <span>{appointments.length}</span>
+          <span>{dashboardDraft.appointments.length}</span>
           <p>Atenciones en calendario</p>
         </article>
         <article>
-          <span>30</span>
+          <span>
+            {dashboardDraft.medicationReports.reduce((total, report) => total + report.doses, 0)}
+          </span>
           <p>Dosis administradas este mes</p>
         </article>
         <article>
-          <span>12</span>
+          <span>{dashboardDraft.clinicalEntries.length}</span>
           <p>Historias clínicas actualizadas</p>
         </article>
       </section>
@@ -131,16 +311,23 @@ function HomePage({ onLogout }: HomePageProps) {
               <p className="eyebrow">Registro</p>
               <h2>Datos de estudiantes</h2>
             </div>
-            <button type="button">Registrar estudiante</button>
           </div>
 
+          <form className="student-form" onSubmit={handleStudentSubmit}>
+            <input name="name" placeholder="Nombre completo" required />
+            <input name="age" type="number" min="1" placeholder="Edad" required />
+            <input name="grade" placeholder="Curso" required />
+            <input name="allergies" placeholder="Alergias" />
+            <button type="submit">Guardar estudiante</button>
+          </form>
+
           <div className="student-list">
-            {students.map((student) => (
+            {dashboardDraft.students.map((student) => (
               <button
-                className={student.id === selectedStudent.id ? "active" : ""}
+                className={student.id === selectedStudent?.id ? "active" : ""}
                 key={student.id}
                 type="button"
-                onClick={() => setSelectedStudent(student)}
+                onClick={() => setSelectedStudentId(student.id)}
               >
                 <strong>{student.name}</strong>
                 <span>
@@ -152,30 +339,57 @@ function HomePage({ onLogout }: HomePageProps) {
           </div>
         </article>
 
-        <article className="panel">
-          <p className="eyebrow">Paciente seleccionado</p>
-          <h2>{selectedStudent.name}</h2>
-          <dl className="clinical-summary">
-            <div><dt>Código</dt><dd>{selectedStudent.id}</dd></div>
-            <div><dt>Curso</dt><dd>{selectedStudent.grade}</dd></div>
-            <div><dt>Alergias</dt><dd>{selectedStudent.allergies}</dd></div>
-            <div><dt>Fechas de consultas</dt><dd>18/08, 20/08, 24/08</dd></div>
-          </dl>
-        </article>
+        {selectedStudent && (
+          <article className="panel">
+            <p className="eyebrow">Paciente seleccionado</p>
+            <h2>{selectedStudent.name}</h2>
+            <dl className="clinical-summary">
+              <div><dt>Código</dt><dd>{selectedStudent.id}</dd></div>
+              <div><dt>Curso</dt><dd>{selectedStudent.grade}</dd></div>
+              <div><dt>Alergias</dt><dd>{selectedStudent.allergies}</dd></div>
+              <div>
+                <dt>Fechas de consultas</dt>
+                <dd>
+                  {selectedClinicalEntries.length > 0
+                    ? selectedClinicalEntries.map((entry) => entry.date).join(", ")
+                    : selectedStudent.lastVisit}
+                </dd>
+              </div>
+            </dl>
+
+            <div className="history-list">
+              <h3>Historial clínico local</h3>
+              {selectedClinicalEntries.length > 0 ? (
+                selectedClinicalEntries.map((entry) => (
+                  <article key={entry.id}>
+                    <strong>{entry.date} · {entry.reason}</strong>
+                    <p>{entry.note}</p>
+                  </article>
+                ))
+              ) : (
+                <p>Aún no hay notas clínicas registradas para este paciente.</p>
+              )}
+            </div>
+          </article>
+        )}
 
         <article className="panel form-panel">
           <p className="eyebrow">Nueva atención</p>
           <h2>Registrar motivo e historial clínico</h2>
-          <form>
+          <form onSubmit={handleClinicalSubmit}>
             <label>
               Motivo de consulta
-              <input placeholder="Ej. mareo durante educación física" />
+              <input name="reason" placeholder="Ej. mareo durante educación física" required />
             </label>
             <label>
               Nota clínica del paciente
-              <textarea placeholder="Signos vitales, antecedentes, diagnóstico y recomendaciones" />
+              <textarea
+                name="note"
+                placeholder="Signos vitales, antecedentes, diagnóstico y recomendaciones"
+                required
+              />
             </label>
-            <button type="button">Añadir al historial clínico</button>
+            <button type="submit">Añadir al historial clínico</button>
           </form>
         </article>
 
@@ -183,8 +397,8 @@ function HomePage({ onLogout }: HomePageProps) {
           <p className="eyebrow">Calendario</p>
           <h2>Atenciones programadas</h2>
           <ul className="timeline">
-            {appointments.map((appointment) => (
-              <li key={`${appointment.time}-${appointment.student}`}>
+            {dashboardDraft.appointments.map((appointment) => (
+              <li key={`${appointment.time}-${appointment.student}-${appointment.reason}`}>
                 <time>{appointment.time}</time>
                 <div>
                   <strong>{appointment.student}</strong>
@@ -196,12 +410,23 @@ function HomePage({ onLogout }: HomePageProps) {
           </ul>
         </article>
 
-        <article className="panel">
+        <article className="panel form-panel">
           <p className="eyebrow">Reportes</p>
           <h2>Medicamentos administrados</h2>
+          <form onSubmit={handleMedicationSubmit}>
+            <label>
+              Medicamento
+              <input name="medicine" placeholder="Ej. Paracetamol 500 mg" required />
+            </label>
+            <label>
+              Dosis administradas
+              <input name="doses" type="number" min="1" placeholder="Cantidad" required />
+            </label>
+            <button type="submit">Guardar reporte</button>
+          </form>
           <ul className="medication-list">
-            {medicationReports.map((report) => (
-              <li key={report.medicine}>
+            {dashboardDraft.medicationReports.map((report) => (
+              <li key={`${report.medicine}-${report.lastAdministered}`}>
                 <strong>{report.medicine}</strong>
                 <span>{report.doses} dosis · Última: {report.lastAdministered}</span>
               </li>
