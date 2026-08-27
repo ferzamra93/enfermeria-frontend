@@ -1,33 +1,37 @@
-import { useNavigate } from "react-router-dom";
-
 import { authRepository } from "../repositories/authRepository";
 
-function HomePage() {
-  const navigate = useNavigate();
+interface HomePageProps {
+  onLogout: () => void;
+}
+
+function HomePage({ onLogout }: HomePageProps) {
   const user = authRepository.getCurrentUser();
 
   const handleLogout = () => {
     authRepository.logout();
-    navigate("/login", { replace: true });
+    onLogout();
   };
 
   return (
-    <main>
-      <h1>Página principal</h1>
+    <main className="home-page">
+      <section className="home-card">
+        <p className="eyebrow">Sistema de enfermería</p>
+        <h1>Página principal</h1>
 
-      {user ? (
-        <>
-          <p>Bienvenido, {user.name}</p>
-          <p>Carnet: {user.carnet}</p>
-          <p>Rol: {user.role}</p>
+        {user ? (
+          <>
+            <p>Bienvenido, {user.name}</p>
+            <p>Carnet: {user.carnet}</p>
+            <p>Rol: {user.role}</p>
 
-          <button type="button" onClick={handleLogout}>
-            Cerrar sesión
-          </button>
-        </>
-      ) : (
-        <p>No existe una sesión activa.</p>
-      )}
+            <button type="button" onClick={handleLogout}>
+              Cerrar sesión
+            </button>
+          </>
+        ) : (
+          <p>No existe una sesión activa. Ingrese desde /login.</p>
+        )}
+      </section>
     </main>
   );
 }
