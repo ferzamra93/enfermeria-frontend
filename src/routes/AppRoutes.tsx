@@ -1,17 +1,19 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { useState } from "react";
 
 import HomePage from "../pages/HomePage";
 import LoginPage from "../pages/auth/LoginPage";
+import { authRepository } from "../repositories/authRepository";
 
 function AppRoutes() {
-  return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/login" element={<LoginPage />} />
-      </Routes>
-    </BrowserRouter>
+  const [isAuthenticated, setIsAuthenticated] = useState(
+    authRepository.isAuthenticated(),
   );
+
+  if (!isAuthenticated) {
+    return <LoginPage onLogin={() => setIsAuthenticated(true)} />;
+  }
+
+  return <HomePage onLogout={() => setIsAuthenticated(false)} />;
 }
 
 export default AppRoutes;
