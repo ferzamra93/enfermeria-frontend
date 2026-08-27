@@ -1,18 +1,16 @@
 import { useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
 
 import LoginForm from "../../components/auth/LoginForm";
 import { authRepository } from "../../repositories/authRepository";
 
 import type { LoginCredentials } from "../../types/auth";
 
-function LoginPage() {
-  const navigate = useNavigate();
-  const [error, setError] = useState("");
+interface LoginPageProps {
+  onLoginSuccess: () => void;
+}
 
-  if (authRepository.isAuthenticated()) {
-    return <Navigate to="/" replace />;
-  }
+function LoginPage({ onLoginSuccess }: LoginPageProps) {
+  const [error, setError] = useState("");
 
   const handleLogin = (credentials: LoginCredentials) => {
     setError("");
@@ -24,11 +22,11 @@ function LoginPage() {
       return;
     }
 
-    navigate("/", { replace: true });
+    onLoginSuccess();
   };
 
   return (
-    <main>
+    <main className="login-page">
       <LoginForm error={error} onSubmit={handleLogin} />
     </main>
   );
