@@ -6,10 +6,10 @@ import { authRepository } from "../../repositories/authRepository";
 import type { LoginCredentials } from "../../types/auth";
 
 interface LoginPageProps {
-  onLoginSuccess: () => void;
+  onLogin: () => void;
 }
 
-function LoginPage({ onLoginSuccess }: LoginPageProps) {
+function LoginPage({ onLogin }: LoginPageProps) {
   const [error, setError] = useState("");
 
   const handleLogin = (credentials: LoginCredentials) => {
@@ -22,11 +22,11 @@ function LoginPage({ onLoginSuccess }: LoginPageProps) {
       return;
     }
 
-    onLoginSuccess();
+    onLogin();
   };
 
   return (
-    <main className="login-page">
+    <main className="login-shell">
       <LoginForm error={error} onSubmit={handleLogin} />
     </main>
   );
