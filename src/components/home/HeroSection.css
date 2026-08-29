@@ -1,0 +1,157 @@
+.hero {
+  position: relative;
+  width: 100%;
+  min-height: 360px;
+
+  background-image: url("/images/hero-enfermeria.jpg");
+  background-size: cover;
+  background-position: center;
+
+  display: flex;
+  align-items: center;
+
+  overflow: hidden;
+}
+
+/* Capa morada sobre la imagen */
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+
+  background: rgba(91, 45, 135, 0.68);
+}
+
+/* Contenedor */
+
+.hero-container {
+  position: relative;
+  z-index: 2;
+
+  width: 100%;
+  max-width: 1350px;
+
+  margin: 0 auto;
+  padding: 60px 35px;
+}
+
+/* Contenido */
+
+.hero-content {
+  color: white;
+  max-width: 600px;
+}
+
+.hero-content h1 {
+  margin: 0 0 22px;
+
+  font-size: 48px;
+  line-height: 1.15;
+  font-weight: 700;
+}
+
+.hero-content p {
+  margin: 0 0 28px;
+
+  font-size: 17px;
+  line-height: 1.7;
+
+  color: #ffffff;
+}
+
+/* ==========================
+   BOTONES
+========================== */
+
+.hero-buttons {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+
+.hero-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 145px;
+
+  padding: 13px 22px;
+
+  border-radius: 7px;
+
+  text-decoration: none;
+
+  font-size: 15px;
+  font-weight: 600;
+
+  transition: all 0.2s ease;
+}
+
+/* Botón principal */
+
+.hero-button.primary {
+  background: #9145df;
+  color: white;
+  border: 2px solid #9145df;
+}
+
+.hero-button.primary:hover {
+  background: #7d35c7;
+  border-color: #7d35c7;
+}
+
+/* Botón secundario */
+
+.hero-button.secondary {
+  background: transparent;
+  color: white;
+
+  border: 2px solid white;
+}
+
+.hero-button.secondary:hover {
+  background: white;
+  color: #7438d0;
+}
+
+/* Icono */
+
+.hero-button span {
+  margin-right: 8px;
+  font-size: 18px;
+}
+
+/* ==========================
+   RESPONSIVE
+========================== */
+
+@media (max-width: 750px) {
+
+  .hero {
+    min-height: 500px;
+  }
+
+  .hero-container {
+    padding: 50px 25px;
+  }
+
+  .hero-content h1 {
+    font-size: 38px;
+  }
+
+  .hero-content p {
+    font-size: 15px;
+  }
+
+  .hero-content p br {
+    display: none;
+  }
+
+  .hero-buttons {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+}

@@ -1,0 +1,155 @@
+.features-section {
+  padding: 55px 11% 65px;
+  background: #ffffff;
+}
+
+.features-title {
+  text-align: center;
+  margin-bottom: 45px;
+}
+
+.features-title h2 {
+  margin: 0;
+
+  color: #293451;
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.features-title::after {
+  content: "";
+
+  display: block;
+
+  width: 60px;
+  height: 3px;
+
+  margin: 16px auto 0;
+
+  background: #843dd2;
+  border-radius: 3px;
+}
+
+.features-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(4, 1fr);
+
+  gap: 20px;
+}
+
+.feature-card {
+  padding: 28px 22px;
+
+  background: #ffffff;
+
+  border: 1px solid #eeeeee;
+
+  border-radius: 8px;
+
+  text-align: center;
+
+  box-shadow:
+    0 4px 15px rgba(40, 30, 70, 0.08);
+
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+
+  box-shadow:
+    0 10px 25px rgba(40, 30, 70, 0.13);
+}
+
+.feature-icon {
+  width: 60px;
+  height: 60px;
+
+  margin: 0 auto 18px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #f0e5ff;
+
+  color: #7738c6;
+
+  font-size: 27px;
+}
+
+.feature-card h3 {
+  margin: 0 0 12px;
+
+  color: #293451;
+
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.feature-card p {
+  margin: 0 0 22px;
+
+  color: #4d5366;
+
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.feature-button {
+  display: inline-block;
+
+  padding: 10px 25px;
+
+  border: none;
+  border-radius: 6px;
+
+  background: #f0e5ff;
+  color: #7437c4;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+.feature-button:hover {
+  background: #843dd2;
+  color: white;
+}
+
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 1000px) {
+
+  .features-grid {
+    grid-template-columns:
+      repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+
+  .features-section {
+    padding: 45px 25px;
+  }
+
+  .features-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .features-title h2 {
+    font-size: 26px;
+  }
+}
