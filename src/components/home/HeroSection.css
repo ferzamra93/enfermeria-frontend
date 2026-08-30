@@ -1,7 +1,11 @@
-.hero {
+/* ========================================
+   HERO SECTION
+======================================== */
+
+.hero-section {
   position: relative;
   width: 100%;
-  min-height: 360px;
+  min-height: 430px;
 
   background-image: url("/images/hero-enfermeria.jpg");
   background-size: cover;
@@ -13,16 +17,28 @@
   overflow: hidden;
 }
 
-/* Capa morada sobre la imagen */
+
+/* ========================================
+   CAPA MORADA
+======================================== */
 
 .hero-overlay {
   position: absolute;
   inset: 0;
 
-  background: rgba(91, 45, 135, 0.68);
+  background:
+    linear-gradient(
+      90deg,
+      rgba(72, 35, 115, 0.94) 0%,
+      rgba(91, 45, 135, 0.82) 48%,
+      rgba(91, 45, 135, 0.55) 100%
+    );
 }
 
-/* Contenedor */
+
+/* ========================================
+   CONTENEDOR
+======================================== */
 
 .hero-container {
   position: relative;
@@ -32,126 +48,202 @@
   max-width: 1350px;
 
   margin: 0 auto;
-  padding: 60px 35px;
+  padding: 75px 50px;
 }
 
-/* Contenido */
+
+/* ========================================
+   CONTENIDO
+======================================== */
 
 .hero-content {
+  max-width: 620px;
   color: white;
-  max-width: 600px;
 }
+
+
+/* Pequeño título */
+
+.hero-small-title {
+  margin: 0 0 14px !important;
+
+  color: #e9d8ff !important;
+
+  font-size: 13px !important;
+  font-weight: 700;
+
+  letter-spacing: 2px;
+
+  text-transform: uppercase;
+}
+
+
+/* Título principal */
 
 .hero-content h1 {
   margin: 0 0 22px;
 
-  font-size: 48px;
-  line-height: 1.15;
-  font-weight: 700;
+  color: white;
+
+  font-size: 52px;
+  line-height: 1.08;
+
+  font-weight: 800;
+
+  letter-spacing: -1px;
 }
 
-.hero-content p {
-  margin: 0 0 28px;
 
-  font-size: 17px;
-  line-height: 1.7;
+/* Descripción */
 
-  color: #ffffff;
+.hero-description {
+  max-width: 540px;
+
+  margin: 0 0 32px !important;
+
+  color: rgba(255, 255, 255, 0.92) !important;
+
+  font-size: 18px !important;
+  line-height: 1.65 !important;
 }
 
-/* ==========================
+
+/* ========================================
    BOTONES
-========================== */
+======================================== */
 
 .hero-buttons {
   display: flex;
+
   align-items: center;
-  gap: 22px;
+
+  gap: 16px;
 }
+
 
 .hero-button {
   display: inline-flex;
+
   align-items: center;
   justify-content: center;
 
-  min-width: 145px;
+  min-width: 155px;
 
-  padding: 13px 22px;
+  padding: 14px 25px;
 
-  border-radius: 7px;
+  border-radius: 8px;
 
   text-decoration: none;
 
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 700;
 
-  transition: all 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
 }
+
 
 /* Botón principal */
 
 .hero-button.primary {
-  background: #9145df;
+  background: #963fe8;
+
   color: white;
-  border: 2px solid #9145df;
+
+  border: 2px solid #963fe8;
+
+  box-shadow:
+    0 8px 20px rgba(0, 0, 0, 0.18);
 }
 
+
 .hero-button.primary:hover {
-  background: #7d35c7;
-  border-color: #7d35c7;
+  background: #8330d0;
+
+  border-color: #8330d0;
+
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 10px 25px rgba(0, 0, 0, 0.24);
 }
+
 
 /* Botón secundario */
 
 .hero-button.secondary {
-  background: transparent;
+  background: rgba(255, 255, 255, 0.04);
+
   color: white;
 
-  border: 2px solid white;
+  border: 2px solid rgba(255, 255, 255, 0.85);
+
+  backdrop-filter: blur(4px);
 }
+
 
 .hero-button.secondary:hover {
   background: white;
+
   color: #7438d0;
+
+  transform: translateY(-2px);
 }
 
-/* Icono */
 
-.hero-button span {
-  margin-right: 8px;
-  font-size: 18px;
-}
-
-/* ==========================
+/* ========================================
    RESPONSIVE
-========================== */
+======================================== */
 
-@media (max-width: 750px) {
+@media (max-width: 900px) {
 
-  .hero {
+  .hero-container {
+    padding: 65px 35px;
+  }
+
+  .hero-content h1 {
+    font-size: 44px;
+  }
+
+}
+
+
+@media (max-width: 650px) {
+
+  .hero-section {
     min-height: 500px;
+
+    background-position: 65% center;
   }
 
   .hero-container {
-    padding: 50px 25px;
+    padding: 55px 25px;
+  }
+
+  .hero-content {
+    max-width: 100%;
   }
 
   .hero-content h1 {
     font-size: 38px;
   }
 
-  .hero-content p {
-    font-size: 15px;
-  }
-
-  .hero-content p br {
-    display: none;
+  .hero-description {
+    font-size: 16px !important;
   }
 
   .hero-buttons {
     flex-direction: column;
-    align-items: flex-start;
+
+    align-items: stretch;
+
     gap: 12px;
+  }
+
+  .hero-button {
+    width: 100%;
   }
 
 }

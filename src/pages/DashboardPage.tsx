@@ -1,4 +1,5 @@
 import { useState } from "react";
+import "./DashboardPage.css";
 
 import DashboardHeader from "../components/dashboard/DashboardHeader";
 import MetricGrid from "../components/dashboard/MetricGrid";

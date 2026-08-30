@@ -1,155 +1,316 @@
+/* ========================================
+   FEATURES SECTION
+======================================== */
+
 .features-section {
-  padding: 55px 11% 65px;
+  width: 100%;
+
+  padding: 75px 35px 85px;
+
   background: #ffffff;
 }
 
-.features-title {
-  text-align: center;
-  margin-bottom: 45px;
+
+.features-container {
+  width: 100%;
+
+  max-width: 1180px;
+
+  margin: 0 auto;
 }
 
-.features-title h2 {
-  margin: 0;
+
+/* ========================================
+   ENCABEZADO
+======================================== */
+
+.section-heading {
+  text-align: center;
+
+  max-width: 700px;
+
+  margin: 0 auto 48px;
+}
+
+
+/* Etiqueta */
+
+.section-heading p {
+  margin: 0 0 10px;
+
+  color: #8240cf;
+
+  font-size: 13px;
+
+  font-weight: 700;
+
+  letter-spacing: 2px;
+
+  text-transform: uppercase;
+}
+
+
+/* Título */
+
+.section-heading h2 {
+  margin: 0 0 15px;
 
   color: #293451;
-  font-size: 30px;
-  font-weight: 700;
+
+  font-size: 32px;
+
+  line-height: 1.2;
+
+  font-weight: 800;
 }
 
-.features-title::after {
+
+/* Línea morada */
+
+.section-heading h2::after {
   content: "";
 
   display: block;
 
-  width: 60px;
-  height: 3px;
+  width: 58px;
+  height: 4px;
 
-  margin: 16px auto 0;
+  margin: 17px auto 0;
+
+  border-radius: 10px;
 
   background: #843dd2;
-  border-radius: 3px;
 }
+
+
+/* Descripción */
+
+.section-heading span {
+  display: block;
+
+  margin-top: 20px;
+
+  color: #687083;
+
+  font-size: 16px;
+
+  line-height: 1.6;
+}
+
+
+/* ========================================
+   GRID
+======================================== */
 
 .features-grid {
   display: grid;
 
   grid-template-columns:
-    repeat(4, 1fr);
+    repeat(4, minmax(0, 1fr));
 
-  gap: 20px;
+  gap: 22px;
 }
 
+
+/* ========================================
+   TARJETA
+======================================== */
+
 .feature-card {
-  padding: 28px 22px;
+  min-height: 300px;
 
-  background: #ffffff;
+  padding: 30px 24px;
 
-  border: 1px solid #eeeeee;
+  display: flex;
 
-  border-radius: 8px;
+  flex-direction: column;
+
+  align-items: center;
 
   text-align: center;
 
+  background: #ffffff;
+
+  border: 1px solid #ece9f2;
+
+  border-radius: 14px;
+
   box-shadow:
-    0 4px 15px rgba(40, 30, 70, 0.08);
+    0 5px 20px rgba(65, 40, 100, 0.07);
 
   transition:
     transform 0.25s ease,
-    box-shadow 0.25s ease;
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
 }
+
+
+/* Hover */
 
 .feature-card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-7px);
+
+  border-color: #e0cafa;
 
   box-shadow:
-    0 10px 25px rgba(40, 30, 70, 0.13);
+    0 14px 30px rgba(80, 45, 120, 0.13);
 }
 
-.feature-icon {
-  width: 60px;
-  height: 60px;
 
-  margin: 0 auto 18px;
+/* ========================================
+   ICONO
+======================================== */
+
+.feature-icon {
+  width: 68px;
+  height: 68px;
+
+  margin-bottom: 22px;
 
   display: flex;
+
   align-items: center;
   justify-content: center;
 
   border-radius: 50%;
 
-  background: #f0e5ff;
+  background:
+    linear-gradient(
+      145deg,
+      #f3e9ff,
+      #ead8ff
+    );
 
   color: #7738c6;
 
-  font-size: 27px;
+  font-size: 29px;
+
+  box-shadow:
+    0 5px 12px rgba(119, 56, 198, 0.08);
 }
 
+
+/* ========================================
+   TÍTULO DE TARJETA
+======================================== */
+
 .feature-card h3 {
-  margin: 0 0 12px;
+  margin: 0 0 13px;
 
   color: #293451;
 
   font-size: 17px;
+
+  line-height: 1.35;
+
   font-weight: 700;
 }
 
+
+/* ========================================
+   DESCRIPCIÓN
+======================================== */
+
 .feature-card p {
+  flex: 1;
+
   margin: 0 0 22px;
 
-  color: #4d5366;
+  color: #626a7c;
 
   font-size: 14px;
-  line-height: 1.6;
+
+  line-height: 1.65;
 }
 
-.feature-button {
-  display: inline-block;
 
-  padding: 10px 25px;
+/* ========================================
+   ENLACE
+======================================== */
 
-  border: none;
-  border-radius: 6px;
+/*
+   Tu FeatureCard actualmente utiliza <a>
+   y no .feature-button.
+*/
 
-  background: #f0e5ff;
+.feature-card a {
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  min-width: 150px;
+
+  padding: 10px 18px;
+
+  border-radius: 7px;
+
+  background: #f1e6ff;
+
   color: #7437c4;
 
+  text-decoration: none;
+
   font-size: 14px;
-  font-weight: 600;
 
-  cursor: pointer;
+  font-weight: 700;
 
-  transition: all 0.2s ease;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
 }
 
-.feature-button:hover {
+
+.feature-card a:hover {
   background: #843dd2;
+
   color: white;
+
+  transform: translateY(-1px);
 }
 
 
-/* =========================
+/* ========================================
    RESPONSIVE
-========================= */
+======================================== */
 
-@media (max-width: 1000px) {
+@media (max-width: 1050px) {
 
   .features-grid {
     grid-template-columns:
-      repeat(2, 1fr);
+      repeat(2, minmax(0, 1fr));
   }
+
 }
 
-@media (max-width: 600px) {
+
+@media (max-width: 650px) {
 
   .features-section {
-    padding: 45px 25px;
+    padding: 55px 22px 65px;
+  }
+
+  .section-heading {
+    margin-bottom: 35px;
+  }
+
+  .section-heading h2 {
+    font-size: 27px;
+  }
+
+  .section-heading span {
+    font-size: 15px;
   }
 
   .features-grid {
     grid-template-columns: 1fr;
+
+    gap: 18px;
   }
 
-  .features-title h2 {
-    font-size: 26px;
+  .feature-card {
+    min-height: 280px;
   }
+
 }

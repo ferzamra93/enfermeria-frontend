@@ -1,4 +1,10 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Navigate,
+  useNavigate,
+} from "react-router-dom";
 
 import { useState } from "react";
 
@@ -11,90 +17,125 @@ import { authRepository } from "../repositories/authRepository";
 
 function AppRoutes() {
 
+  const navigate = useNavigate();
+
   const [isAuthenticated, setIsAuthenticated] = useState(
     authRepository.isAuthenticated()
   );
 
 
+  // =========================
+  // LOGIN
+  // =========================
+
   const handleLogin = () => {
+
     setIsAuthenticated(true);
+
+    navigate("/dashboard");
   };
 
 
+  // =========================
+  // LOGOUT
+  // =========================
+
   const handleLogout = () => {
+
+    authRepository.logout();
+
     setIsAuthenticated(false);
+
+    navigate("/");
   };
 
 
   return (
-    <BrowserRouter>
+    <Routes>
 
-      <Routes>
+      {/* =========================
+          HOME
+      ========================== */}
 
-        {/* =========================
-            PÁGINA PRINCIPAL
-        ========================== */}
-
-        <Route
-          path="/"
-          element={<HomePage />}
-        />
+      <Route
+        path="/"
+        element={<HomePage />}
+      />
 
 
-        {/* =========================
-            LOGIN
-        ========================== */}
+      {/* =========================
+          LOGIN
+      ========================== */}
 
-        <Route
-          path="/login"
-          element={
+      <Route
+        path="/login"
+        element={
+          isAuthenticated ? (
+            <Navigate
+              to="/dashboard"
+              replace
+            />
+          ) : (
             <LoginPage
               onLogin={handleLogin}
             />
-          }
-        />
+          )
+        }
+      />
 
 
-        {/* =========================
-            DASHBOARD
-        ========================== */}
+      {/* =========================
+          DASHBOARD
+      ========================== */}
 
-        <Route
-          path="/dashboard"
-          element={
-            isAuthenticated ? (
-              <DashboardPage
-                onLogout={handleLogout}
-              />
-            ) : (
-              <Navigate
-                to="/login"
-                replace
-              />
-            )
-          }
-        />
-
-
-        {/* =========================
-            RUTA NO ENCONTRADA
-        ========================== */}
-
-        <Route
-          path="*"
-          element={
+      <Route
+        path="/dashboard"
+        element={
+          isAuthenticated ? (
+            <DashboardPage
+              onLogout={handleLogout}
+            />
+          ) : (
             <Navigate
-              to="/"
+              to="/login"
               replace
             />
-          }
-        />
+          )
+        }
+      />
 
-      </Routes>
 
+      {/* =========================
+          RUTA NO ENCONTRADA
+      ========================== */}
+
+      <Route
+        path="*"
+        element={
+          <Navigate
+            to="/"
+            replace
+          />
+        }
+      />
+
+    </Routes>
+  );
+}
+
+
+// ========================================
+// BROWSER ROUTER
+// ========================================
+
+function AppRoutesWrapper() {
+
+  return (
+    <BrowserRouter>
+      <AppRoutes />
     </BrowserRouter>
   );
 }
 
 
-export default AppRoutes;
+export default AppRoutesWrapper;
