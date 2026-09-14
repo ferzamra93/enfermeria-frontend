@@ -1,4 +1,6 @@
-import { useState } from "react";
+
+import React, { useState } from "react";
+
 import "./DashboardPage.css";
 
 import DashboardHeader from "../components/dashboard/DashboardHeader";
@@ -15,11 +17,6 @@ import AppointmentList from "../components/appointments/AppointmentList";
 
 import MedicationForm from "../components/medications/MedicationForm";
 import MedicationList from "../components/medications/MedicationList";
-
-
-// ===============================
-// TIPOS
-// ===============================
 
 interface Student {
   id: string;
@@ -51,11 +48,6 @@ interface ClinicalEntry {
   reason: string;
   note: string;
 }
-
-
-// ===============================
-// DATOS INICIALES
-// ===============================
 
 const initialStudents: Student[] = [
   {
@@ -123,40 +115,25 @@ const initialMedicationReports: MedicationReport[] = [
   },
 ];
 
-
-// ===============================
-// PROPS
-// ===============================
-
 interface DashboardPageProps {
   onLogout: () => void;
 }
 
-
-// ===============================
-// COMPONENTE
-// ===============================
-
 const DashboardPage = ({
   onLogout,
 }: DashboardPageProps) => {
-
-  // =============================
-  // ESTADOS
-  // =============================
-
   const [students, setStudents] =
     useState<Student[]>(initialStudents);
 
   const [appointments] =
     useState<Appointment[]>(initialAppointments);
 
-  const [medicationReports] =
+  const [medicationReports, setMedicationReports] =
     useState<MedicationReport[]>(
       initialMedicationReports
     );
 
-  const [clinicalEntries] =
+  const [clinicalEntries, setClinicalEntries] =
     useState<ClinicalEntry[]>([]);
 
   const [selectedStudentId, setSelectedStudentId] =
@@ -164,10 +141,8 @@ const DashboardPage = ({
       initialStudents[0]?.id ?? ""
     );
 
-
-  // =============================
-  // ESTUDIANTE SELECCIONADO
-  // =============================
+  const [studentSearch, setStudentSearch] =
+    useState("");
 
   const selectedStudent =
     students.find(
@@ -175,67 +150,198 @@ const DashboardPage = ({
         student.id === selectedStudentId
     ) ?? null;
 
+  const filteredStudents = students.filter(
+    (student) => {
+      const search =
+        studentSearch.toLowerCase().trim();
 
-  // =============================
-  // CERRAR SESIÓN
-  // =============================
+      return (
+        student.name
+          .toLowerCase()
+          .includes(search) ||
+        student.grade
+          .toLowerCase()
+          .includes(search) ||
+        student.id
+          .toLowerCase()
+          .includes(search)
+      );
+    }
+  );
 
   const handleLogout = () => {
     onLogout();
   };
 
+  const handleStudentSubmit = (
+    event: React.FormEvent<HTMLFormElement>
+  ) => {
+    event.preventDefault();
 
-  // =============================
-  // AGREGAR ESTUDIANTE
-  // =============================
-
-  const handleStudentSubmit = () => {
-
-    // Por ahora dejamos esta función
-    // preparada para conectar el formulario.
-
-    console.log(
-      "Formulario de estudiante enviado"
+    const formData = new FormData(
+      event.currentTarget
     );
+
+    const name =
+      String(
+        formData.get("name") ?? ""
+      ).trim();
+
+    const age =
+      Number(
+        formData.get("age") ?? 0
+      );
+
+    const grade =
+      String(
+        formData.get("grade") ?? ""
+      ).trim();
+
+    const allergies =
+      String(
+        formData.get("allergies") ?? ""
+      ).trim();
+
+    if (!name || !age || !grade) {
+      return;
+    }
+
+    const newStudent: Student = {
+      id: `EST-${String(
+        students.length + 1
+      ).padStart(3, "0")}`,
+      name,
+      age,
+      grade,
+      allergies:
+        allergies ||
+        "Ninguna registrada",
+      lastVisit:
+        new Date()
+          .toISOString()
+          .slice(0, 10),
+    };
+
+    setStudents(
+      (currentStudents) => [
+        ...currentStudents,
+        newStudent,
+      ]
+    );
+
+    setSelectedStudentId(
+      newStudent.id
+    );
+
+    event.currentTarget.reset();
   };
 
+  const handleMedicationSubmit = (
+    event: React.FormEvent<HTMLFormElement>
+  ) => {
+    event.preventDefault();
 
-  // =============================
-  // AGREGAR HISTORIAL CLÍNICO
-  // =============================
-
-  const handleClinicalSubmit = () => {
-
-    console.log(
-      "Formulario clínico enviado"
+    const formData = new FormData(
+      event.currentTarget
     );
+
+    const medicine =
+      String(
+        formData.get("medicine") ?? ""
+      ).trim();
+
+    const doses =
+      Number(
+        formData.get("doses") ?? 0
+      );
+
+    if (!medicine || !doses) {
+      return;
+    }
+
+    const newReport: MedicationReport = {
+      medicine,
+      doses,
+      lastAdministered:
+        new Date().toLocaleString(
+          "es-BO"
+        ),
+    };
+
+    setMedicationReports(
+      (currentReports) => [
+        ...currentReports,
+        newReport,
+      ]
+    );
+
+    event.currentTarget.reset();
   };
 
+  const handleClinicalSubmit = (
+    event: React.FormEvent<HTMLFormElement>
+  ) => {
+    event.preventDefault();
 
-  // =============================
-  // RENDER
-  // =============================
+    const formData = new FormData(
+      event.currentTarget
+    );
+
+    const reason =
+      String(
+        formData.get("reason") ?? ""
+      ).trim();
+
+    const note =
+      String(
+        formData.get("note") ?? ""
+      ).trim();
+
+    if (!reason || !note) {
+      return;
+    }
+
+    if (!selectedStudent) {
+      alert(
+        "Selecciona un estudiante antes de agregar el historial clínico."
+      );
+      return;
+    }
+
+    const newEntry: ClinicalEntry = {
+      id: `HIST-${String(
+        clinicalEntries.length + 1
+      ).padStart(3, "0")}`,
+      studentId:
+        selectedStudent.id,
+      studentName:
+        selectedStudent.name,
+      date:
+        new Date().toLocaleString(
+          "es-BO"
+        ),
+      reason,
+      note,
+    };
+
+    setClinicalEntries(
+      (currentEntries) => [
+        ...currentEntries,
+        newEntry,
+      ]
+    );
+
+    event.currentTarget.reset();
+  };
 
   return (
     <div className="dashboard-page">
-
-      {/* =========================
-          HEADER
-      ========================== */}
-
       <DashboardHeader
         onLogout={handleLogout}
       />
 
-
       <main className="dashboard-container">
-
-        {/* =========================
-            BIENVENIDA
-        ========================== */}
-
         <section className="dashboard-welcome">
-
           <p className="dashboard-label">
             PANEL DE ENFERMERÍA
           </p>
@@ -245,141 +351,147 @@ const DashboardPage = ({
           </h1>
 
           <p>
-            Gestiona estudiantes, atenciones,
-            medicamentos e historias clínicas.
+            Gestiona estudiantes,
+            atenciones, medicamentos
+            e historias clínicas.
           </p>
-
         </section>
-
-
-        {/* =========================
-            MÉTRICAS
-        ========================== */}
 
         <MetricGrid
           students={students.length}
-          appointments={appointments.length}
+          appointments={
+            appointments.length
+          }
           doses={medicationReports.reduce(
-            (total, report) =>
-              total + report.doses,
+            (
+              total,
+              report
+            ) =>
+              total +
+              report.doses,
             0
           )}
-          histories={clinicalEntries.length}
+          histories={
+            clinicalEntries.length
+          }
         />
 
-
-        {/* =========================
-            ESTUDIANTES
-        ========================== */}
-
         <section className="dashboard-content">
-
           <section className="dashboard-students">
-
             <h2>
               Estudiantes
             </h2>
 
             <StudentForm
-              onSubmit={handleStudentSubmit}
-            />
-
-            <StudentList
-              students={students}
-              selectedStudentId={
-                selectedStudentId
-              }
-              onSelect={
-                setSelectedStudentId
+              onSubmit={
+                handleStudentSubmit
               }
             />
 
+            <div className="student-search">
+              <input
+                type="text"
+                placeholder="Buscar estudiante..."
+                value={
+                  studentSearch
+                }
+                onChange={(event) =>
+                  setStudentSearch(
+                    event.target.value
+                  )
+                }
+              />
+            </div>
+
+            {filteredStudents.length >
+            0 ? (
+              <StudentList
+                students={
+                  filteredStudents
+                }
+                selectedStudentId={
+                  selectedStudentId
+                }
+                onSelect={
+                  setSelectedStudentId
+                }
+              />
+            ) : (
+              <div className="empty-state">
+                <h3>
+                  No se encontraron estudiantes
+                </h3>
+
+                <p>
+                  Intenta buscar por
+                  nombre, curso o ID.
+                </p>
+              </div>
+            )}
           </section>
 
-
-          {/* =======================
-              DETALLES DEL ESTUDIANTE
-          ======================== */}
-
           <section className="dashboard-details">
-
             {selectedStudent ? (
-
               <StudentDetails
-                student={selectedStudent}
+                student={
+                  selectedStudent
+                }
               />
-
             ) : (
-
               <div className="empty-state">
-
                 <h3>
                   Selecciona un estudiante
                 </h3>
 
                 <p>
-                  Selecciona un estudiante
-                  de la lista para ver sus
+                  Selecciona un
+                  estudiante de la
+                  lista para ver sus
                   datos.
                 </p>
-
               </div>
-
             )}
-
           </section>
-
         </section>
-
-
-        {/* =========================
-            CITAS Y MEDICAMENTOS
-        ========================== */}
 
         <section className="dashboard-secondary">
+          <AppointmentList
+            appointments={
+              appointments
+            }
+          />
 
-            <AppointmentList
-                appointments={appointments}
+          <section className="dashboard-medications">
+            <MedicationForm
+              onSubmit={
+                handleMedicationSubmit
+              }
             />
 
-            <section className="dashboard-medications">
-
-                <MedicationForm
-                onSubmit={() => {
-                    console.log("Medicamento registrado");
-                }}
-                />
-
-                <MedicationList
-                reports={medicationReports}
-                />
-
-            </section>
-
+            <MedicationList
+              reports={
+                medicationReports
+              }
+            />
+          </section>
         </section>
 
-
-        {/* =========================
-            HISTORIAL CLÍNICO
-        ========================== */}
-
         <section className="dashboard-clinical">
-
           <ClinicalForm
-            onSubmit={handleClinicalSubmit}
+            onSubmit={
+              handleClinicalSubmit
+            }
           />
 
           <ClinicalHistory
-            entries={clinicalEntries}
+            entries={
+              clinicalEntries
+            }
           />
-
         </section>
-
       </main>
-
     </div>
   );
 };
-
 
 export default DashboardPage;

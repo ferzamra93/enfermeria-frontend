@@ -45,8 +45,11 @@ const Navbar = () => {
 
         {/* BOTÓN LOGIN */}
         <Link to="/login" className="login-button">
-          <span className="login-icon">👤</span>
-          Iniciar Sesión
+          <span className="login-icon">
+            <span className="user-symbol">👤</span>
+          </span>
+
+          <span>Iniciar Sesión</span>
         </Link>
 
       </div>

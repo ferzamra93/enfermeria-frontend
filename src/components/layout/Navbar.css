@@ -14,26 +14,27 @@
 
   border-bottom: 1px solid #eeeeee;
 
-  box-shadow:
-    0 2px 12px rgba(40, 30, 70, 0.05);
+  box-shadow: 0 2px 12px rgba(40, 30, 70, 0.05);
 }
 
+
+/* ========================================
+   CONTENEDOR
+======================================== */
 
 .navbar-container {
   width: 100%;
   max-width: 1350px;
-
   height: 100%;
 
   margin: 0 auto;
-
   padding: 0 35px;
 
   display: flex;
-
   align-items: center;
-
   justify-content: space-between;
+
+  box-sizing: border-box;
 }
 
 
@@ -43,7 +44,6 @@
 
 .navbar-logo {
   display: flex;
-
   align-items: center;
 
   gap: 12px;
@@ -51,33 +51,29 @@
   min-width: 260px;
 
   color: inherit;
-
   text-decoration: none;
 }
-
 
 .logo-icon {
   width: 48px;
   height: 48px;
 
   display: flex;
-
   align-items: center;
   justify-content: center;
 
   position: relative;
 
   border: 3px solid #7b3fd3;
-
   border-radius: 50%;
 
   color: #7b3fd3;
 
   font-size: 25px;
-
   font-weight: 800;
-}
 
+  box-sizing: border-box;
+}
 
 .logo-icon::before {
   content: "";
@@ -88,39 +84,33 @@
   height: 48px;
 
   border: 3px solid #7b3fd3;
-
   border-radius: 50%;
 
   transform: rotate(45deg);
 
   opacity: 0.9;
-}
 
+  box-sizing: border-box;
+}
 
 .logo-icon span {
   position: relative;
-
   z-index: 2;
 }
 
-
 .logo-text {
   display: flex;
-
   flex-direction: column;
 
   line-height: 1.1;
 }
 
-
 .logo-title {
   color: #7438d0;
 
   font-size: 22px;
-
   font-weight: 800;
 }
-
 
 .logo-subtitle {
   margin-top: 5px;
@@ -132,19 +122,17 @@
 
 
 /* ========================================
-   MENU
+   MENÚ
 ======================================== */
 
 .navbar-menu {
   height: 100%;
 
   display: flex;
-
   align-items: center;
 
   gap: 38px;
 }
-
 
 .nav-link {
   height: 100%;
@@ -152,7 +140,6 @@
   position: relative;
 
   display: flex;
-
   align-items: center;
 
   gap: 8px;
@@ -162,22 +149,18 @@
   text-decoration: none;
 
   font-size: 15px;
-
   font-weight: 600;
 
   transition: color 0.2s ease;
 }
 
-
 .nav-link:hover {
   color: #7438d0;
 }
 
-
 .nav-link.active {
   color: #7438d0;
 }
-
 
 .nav-link.active::after {
   content: "";
@@ -186,7 +169,6 @@
 
   left: 0;
   right: 0;
-
   bottom: 6px;
 
   height: 3px;
@@ -196,40 +178,42 @@
   background: #843dd2;
 }
 
-
 .nav-icon {
   font-size: 16px;
 }
 
 
 /* ========================================
-   LOGIN
+   BOTÓN LOGIN
 ======================================== */
 
 .login-button {
   display: flex;
-
   align-items: center;
   justify-content: center;
 
-  gap: 8px;
+  gap: 7px;
 
-  padding: 12px 22px;
+  width: 140px;
+  height: 42px;
 
-  border-radius: 8px;
+  padding: 0 12px;
+
+  box-sizing: border-box;
+
+  border-radius: 7px;
 
   background: #7b3fd3;
-
   color: white;
 
   text-decoration: none;
 
-  font-size: 14px;
-
+  font-size: 12px;
   font-weight: 700;
 
-  box-shadow:
-    0 5px 14px rgba(123, 63, 211, 0.22);
+  white-space: nowrap;
+
+  box-shadow: 0 4px 12px rgba(123, 63, 211, 0.20);
 
   transition:
     background 0.2s ease,
@@ -237,24 +221,56 @@
     box-shadow 0.2s ease;
 }
 
-
 .login-button:hover {
   background: #6630b5;
 
   transform: translateY(-2px);
 
-  box-shadow:
-    0 8px 18px rgba(123, 63, 211, 0.28);
-}
-
-
-.login-icon {
-  font-size: 15px;
+  box-shadow: 0 7px 15px rgba(123, 63, 211, 0.25);
 }
 
 
 /* ========================================
-   RESPONSIVE
+   ICONO DEL LOGIN
+======================================== */
+.login-button .login-icon {
+  width: 24px !important;
+  height: 24px !important;
+
+  min-width: 24px !important;
+  min-height: 24px !important;
+  max-width: 24px !important;
+  max-height: 24px !important;
+
+  padding: 0 !important;
+  margin: 0 !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  background: white !important;
+  border-radius: 50% !important;
+
+  box-sizing: border-box !important;
+
+  position: static !important;
+
+  overflow: hidden !important;
+}
+
+.login-button .user-symbol {
+  font-size: 10px !important;
+  line-height: 1 !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  position: static !important;
+}
+
+/* ========================================
+   RESPONSIVE - TABLET
 ======================================== */
 
 @media (max-width: 1000px) {
@@ -278,6 +294,10 @@
 }
 
 
+/* ========================================
+   RESPONSIVE - CELULAR
+======================================== */
+
 @media (max-width: 750px) {
 
   .navbar {
@@ -292,18 +312,6 @@
     display: none;
   }
 
-  .logo-icon {
-    width: 40px;
-    height: 40px;
-
-    font-size: 21px;
-  }
-
-  .logo-icon::before {
-    width: 40px;
-    height: 40px;
-  }
-
   .logo-title {
     font-size: 18px;
   }
@@ -313,7 +321,20 @@
   }
 
   .login-button {
-    padding: 10px 15px;
+    height: 44px;
+    min-height: 44px;
+
+    padding: 0 14px;
+
+    font-size: 14px;
+  }
+
+  .login-icon {
+    width: 28px;
+    height: 28px;
+
+    min-width: 28px;
+    min-height: 28px;
 
     font-size: 13px;
   }
