@@ -6,7 +6,11 @@ import { authRepository } from "../../repositories/authRepository";
 
 import "./LoginPage.css";
 
-interface LoginPageProps {\n  onLogin: () => void;\n}\n\nconst LoginPage = ({ onLogin }: LoginPageProps) => {
+interface LoginPageProps {
+  onLogin: () => void;
+}
+
+const LoginPage = ({ onLogin }: LoginPageProps) => {
   const navigate = useNavigate();
 
   const [error, setError] = useState("");
