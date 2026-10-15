@@ -1,136 +1,62 @@
+import { Link } from "react-router-dom";
 import "./Footer.css";
 
 const Footer = () => {
   return (
     <footer className="footer">
-
       <div className="footer-container">
-
         <div className="footer-brand">
-
-          <h3>Enfermería</h3>
+          <Link to="/" className="footer-brand-link">
+            <span className="footer-brand-icon">+</span>
+            <span>Sistema de Enfermería</span>
+          </Link>
 
           <p>
-            Sistema integral para la gestión
-            de servicios de enfermería y cuidado
-            personalizado.
+            Una herramienta para organizar la atención, proteger la
+            información y acompañar el bienestar de cada estudiante.
           </p>
-
-          <div className="footer-social">
-            <a href="#">f</a>
-            <a href="#">in</a>
-            <a href="#">◎</a>
-          </div>
-
         </div>
 
-
         <div className="footer-column">
-
-          <h4>Enlaces</h4>
-
+          <h4>Navegación</h4>
           <ul>
+            <li><Link to="/">Inicio</Link></li>
             <li>
-              <a href="#">Inicio</a>
+              <a
+                href="https://donboscosucre.edu.bo/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Nosotros
+              </a>
             </li>
-
-            <li>
-              <a href="#">Nosotros</a>
-            </li>
-
-            <li>
-              <a href="#">Servicios</a>
-            </li>
-
-            <li>
-              <a href="#">Contacto</a>
-            </li>
+            
           </ul>
-
         </div>
 
-
         <div className="footer-column">
-
-          <h4>Servicios</h4>
-
+          <h4>Gestión de enfermería</h4>
           <ul>
-            <li>
-              <a href="#">Gestión de pacientes</a>
-            </li>
-
-            <li>
-              <a href="#">Citas</a>
-            </li>
-
-            <li>
-              <a href="#">Historias clínicas</a>
-            </li>
-
-            <li>
-              <a href="#">Medicamentos</a>
-            </li>
+            <li><span>Estudiantes</span></li>
+            <li><span>Reportes de medicamentos</span></li>
+            <li><span>Historial clínico</span></li>
+            <li><span>Atención de enfermería</span></li>
           </ul>
-
         </div>
 
-
-        <div className="footer-column">
-
-          <h4>Contacto</h4>
-
-          <div className="footer-contact">
-
-            <div className="footer-contact-item">
-              <span className="footer-contact-icon">
-                📍
-              </span>
-
-              <span>
-                La Paz, Bolivia
-              </span>
-            </div>
-
-            <div className="footer-contact-item">
-              <span className="footer-contact-icon">
-                ✉
-              </span>
-
-              <span>
-                contacto@enfermeria.com
-              </span>
-            </div>
-
-            <div className="footer-contact-item">
-              <span className="footer-contact-icon">
-                ☎
-              </span>
-
-              <span>
-                +591 70000000
-              </span>
-            </div>
-
-          </div>
-
+        <div className="footer-column footer-access">
+          <h4>Acceso al sistema</h4>
+          <p>Ingresa al sistema para gestionar los registros autorizados.</p>
+          <Link to="/login" className="footer-login-link">
+            Iniciar sesión <span aria-hidden="true">→</span>
+          </Link>
         </div>
-
       </div>
-
 
       <div className="footer-bottom">
-
-        <p>
-          © 2026 Enfermería. Todos los derechos reservados.
-        </p>
-
-        <div className="footer-bottom-links">
-          <a href="#">Privacidad</a>
-          <a href="#">Términos</a>
-        </div>
-
+        <p>© {new Date().getFullYear()} Sistema de Enfermería.</p>
+        <p>Atención responsable · Privacidad · Bienestar</p>
       </div>
-
     </footer>
   );
 };

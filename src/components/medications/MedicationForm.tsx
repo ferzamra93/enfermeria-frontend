@@ -1,20 +1,17 @@
+import type { FormEventHandler } from "react";
+
 interface MedicationFormProps {
-  onSubmit: (
-    event: React.FormEvent<HTMLFormElement>
-  ) => void;
+  onSubmit: FormEventHandler<HTMLFormElement>;
 }
 
-const MedicationForm = ({
-  onSubmit,
-}: MedicationFormProps) => {
+const MedicationForm = ({ onSubmit }: MedicationFormProps) => {
   return (
     <form onSubmit={onSubmit}>
-
       <label>
         Medicamento
-
         <input
           name="medicine"
+          type="text"
           placeholder="Ej. Paracetamol 500 mg"
           required
         />
@@ -22,20 +19,17 @@ const MedicationForm = ({
 
       <label>
         Dosis administradas
-
         <input
           name="doses"
           type="number"
           min="1"
+          step="1"
           placeholder="Cantidad"
           required
         />
       </label>
 
-      <button type="submit">
-        Guardar reporte
-      </button>
-
+      <button type="submit">Guardar reporte</button>
     </form>
   );
 };

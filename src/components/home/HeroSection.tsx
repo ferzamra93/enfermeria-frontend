@@ -4,44 +4,34 @@ import "./HeroSection.css";
 const HeroSection = () => {
   return (
     <section className="hero-section">
-
-      <div className="hero-overlay"></div>
+      <div className="hero-overlay" />
 
       <div className="hero-container">
-
         <div className="hero-content">
-
           <p className="hero-small-title">
-            CUIDADO Y SALUD
+            SISTEMA INTEGRAL DE SALUD ESCOLAR
           </p>
 
           <h1>
-            Bienvenido a
+            Cuidamos la salud,
             <br />
-            Enfermería
+            <strong>protegemos el futuro.</strong>
           </h1>
 
           <p className="hero-description">
-            Sistema integral para la gestión de servicios
-            de enfermería y cuidado personalizado.
+            Una plataforma para organizar la atención de enfermería,
+            gestionar estudiantes y mantener su información clínica
+            de forma clara y responsable.
           </p>
 
           <div className="hero-buttons">
-
             <Link to="/login" className="hero-button primary">
-              Iniciar Sesión
+              Iniciar sesión
+              <span aria-hidden="true"> →</span>
             </Link>
-
-            <Link to="/nosotros" className="hero-button secondary">
-              Conocer Más
-            </Link>
-
           </div>
-
         </div>
-
       </div>
-
     </section>
   );
 };

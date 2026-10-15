@@ -1,249 +1,172 @@
-/* ========================================
-   HERO SECTION
-======================================== */
-
 .hero-section {
   position: relative;
   width: 100%;
-  min-height: 430px;
-
-  background-image: url("/images/hero-enfermeria.jpg");
-  background-size: cover;
-  background-position: center;
-
+  min-height: 490px;
   display: flex;
   align-items: center;
-
   overflow: hidden;
+  background-color: #17365d;
+  background-image: url("/images/hero-enfermeria.jpg");
+  background-position: center;
+  background-size: cover;
 }
-
-
-/* ========================================
-   CAPA MORADA
-======================================== */
 
 .hero-overlay {
   position: absolute;
   inset: 0;
-
-  background:
-    linear-gradient(
-      90deg,
-      rgba(72, 35, 115, 0.94) 0%,
-      rgba(91, 45, 135, 0.82) 48%,
-      rgba(91, 45, 135, 0.55) 100%
-    );
+  background: linear-gradient(
+    90deg,
+    rgba(17, 43, 77, 0.96) 0%,
+    rgba(23, 54, 93, 0.88) 52%,
+    rgba(23, 54, 93, 0.46) 100%
+  );
 }
-
-
-/* ========================================
-   CONTENEDOR
-======================================== */
 
 .hero-container {
   position: relative;
   z-index: 2;
-
   width: 100%;
-  max-width: 1350px;
-
+  max-width: 1250px;
   margin: 0 auto;
-  padding: 75px 50px;
+  padding: 85px 40px;
 }
-
-
-/* ========================================
-   CONTENIDO
-======================================== */
 
 .hero-content {
-  max-width: 620px;
-  color: white;
+  max-width: 700px;
+  color: #ffffff;
 }
-
-
-/* Pequeño título */
 
 .hero-small-title {
-  margin: 0 0 14px !important;
-
-  color: #e9d8ff !important;
-
-  font-size: 13px !important;
-  font-weight: 700;
-
+  display: inline-block;
+  margin: 0 0 22px !important;
+  padding: 9px 14px;
+  border-left: 4px solid #d5aa45;
+  background: rgba(255, 255, 255, 0.09);
+  color: #f3d98e !important;
+  font-size: 12px !important;
+  font-weight: 800;
   letter-spacing: 2px;
-
-  text-transform: uppercase;
+  line-height: 1.5;
 }
-
-
-/* Título principal */
 
 .hero-content h1 {
-  margin: 0 0 22px;
-
-  color: white;
-
-  font-size: 52px;
-  line-height: 1.08;
-
+  margin: 0 0 24px;
+  color: #ffffff;
+  font-size: clamp(36px, 5vw, 58px);
   font-weight: 800;
-
-  letter-spacing: -1px;
+  line-height: 1.12;
+  letter-spacing: -1.5px;
 }
 
-
-/* Descripción */
+.hero-content h1 strong {
+  color: #f0cc70;
+  font-weight: 800;
+}
 
 .hero-description {
-  max-width: 540px;
-
+  max-width: 610px;
   margin: 0 0 32px !important;
-
-  color: rgba(255, 255, 255, 0.92) !important;
-
-  font-size: 18px !important;
-  line-height: 1.65 !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+  font-size: 17px !important;
+  line-height: 1.8 !important;
 }
-
-
-/* ========================================
-   BOTONES
-======================================== */
 
 .hero-buttons {
   display: flex;
-
   align-items: center;
-
   gap: 16px;
 }
 
-
 .hero-button {
   display: inline-flex;
-
+  min-height: 50px;
   align-items: center;
   justify-content: center;
-
-  min-width: 155px;
-
-  padding: 14px 25px;
-
-  border-radius: 8px;
-
+  padding: 0 27px;
+  border: 2px solid transparent;
+  border-radius: 5px;
   text-decoration: none;
-
   font-size: 15px;
-  font-weight: 700;
-
+  font-weight: 800;
   transition:
-    transform 0.2s ease,
     background 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease,
     box-shadow 0.2s ease;
 }
 
-
-/* Botón principal */
-
 .hero-button.primary {
-  background: #963fe8;
-
-  color: white;
-
-  border: 2px solid #963fe8;
-
-  box-shadow:
-    0 8px 20px rgba(0, 0, 0, 0.18);
+  background: #d5aa45;
+  border-color: #d5aa45;
+  color: #17365d;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
 }
-
 
 .hero-button.primary:hover {
-  background: #8330d0;
-
-  border-color: #8330d0;
-
+  background: #edc965;
+  border-color: #edc965;
   transform: translateY(-2px);
-
-  box-shadow:
-    0 10px 25px rgba(0, 0, 0, 0.24);
+  box-shadow: 0 11px 25px rgba(0, 0, 0, 0.23);
 }
 
-
-/* Botón secundario */
-
-.hero-button.secondary {
-  background: rgba(255, 255, 255, 0.04);
-
-  color: white;
-
-  border: 2px solid rgba(255, 255, 255, 0.85);
-
-  backdrop-filter: blur(4px);
+.hero-button:focus-visible {
+  outline: 3px solid #ffffff;
+  outline-offset: 4px;
 }
 
-
-.hero-button.secondary:hover {
-  background: white;
-
-  color: #7438d0;
-
-  transform: translateY(-2px);
-}
-
-
-/* ========================================
-   RESPONSIVE
-======================================== */
-
-@media (max-width: 900px) {
-
-  .hero-container {
-    padding: 65px 35px;
-  }
-
-  .hero-content h1 {
-    font-size: 44px;
-  }
-
-}
-
-
-@media (max-width: 650px) {
-
+@media (max-width: 768px) {
   .hero-section {
-    min-height: 500px;
+    min-height: 460px;
+    background-position: 60% center;
+  }
 
-    background-position: 65% center;
+  .hero-overlay {
+    background: linear-gradient(
+      90deg,
+      rgba(17, 43, 77, 0.96),
+      rgba(23, 54, 93, 0.8)
+    );
   }
 
   .hero-container {
-    padding: 55px 25px;
-  }
-
-  .hero-content {
-    max-width: 100%;
+    padding: 65px 25px;
   }
 
   .hero-content h1 {
-    font-size: 38px;
+    font-size: clamp(34px, 8vw, 46px);
+    letter-spacing: -0.8px;
   }
 
   .hero-description {
     font-size: 16px !important;
   }
+}
 
-  .hero-buttons {
-    flex-direction: column;
+@media (max-width: 480px) {
+  .hero-section {
+    min-height: 440px;
+  }
 
-    align-items: stretch;
+  .hero-container {
+    padding: 50px 20px;
+  }
 
-    gap: 12px;
+  .hero-small-title {
+    font-size: 10px !important;
+    letter-spacing: 1.2px;
+  }
+
+  .hero-content h1 {
+    font-size: 34px;
+  }
+
+  .hero-description {
+    font-size: 15px !important;
+    line-height: 1.7 !important;
   }
 
   .hero-button {
     width: 100%;
+    min-height: 48px;
   }
-
 }

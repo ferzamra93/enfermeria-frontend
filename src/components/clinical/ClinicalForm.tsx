@@ -1,20 +1,17 @@
+import type { FormEventHandler } from "react";
+
 interface ClinicalFormProps {
-  onSubmit: (
-    event: React.FormEvent<HTMLFormElement>
-  ) => void;
+  onSubmit: FormEventHandler<HTMLFormElement>;
 }
 
-const ClinicalForm = ({
-  onSubmit,
-}: ClinicalFormProps) => {
+const ClinicalForm = ({ onSubmit }: ClinicalFormProps) => {
   return (
     <form onSubmit={onSubmit}>
-
       <label>
         Motivo de consulta
-
         <input
           name="reason"
+          type="text"
           placeholder="Motivo de consulta"
           required
         />
@@ -22,7 +19,6 @@ const ClinicalForm = ({
 
       <label>
         Nota clínica
-
         <textarea
           name="note"
           placeholder="Escriba la nota clínica"
@@ -30,10 +26,7 @@ const ClinicalForm = ({
         />
       </label>
 
-      <button type="submit">
-        Añadir al historial clínico
-      </button>
-
+      <button type="submit">Añadir al historial clínico</button>
     </form>
   );
 };

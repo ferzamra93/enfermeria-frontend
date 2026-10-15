@@ -20,32 +20,20 @@ const StudentList = ({
 }: StudentListProps) => {
   return (
     <div className="student-list">
-
       {students.map((student) => (
-
         <button
           key={student.id}
           type="button"
-          className={
-            student.id === selectedStudentId
-              ? "active"
-              : ""
-          }
+          className={student.id === selectedStudentId ? "active" : ""}
           onClick={() => onSelect(student.id)}
         >
-
-          <strong>
-            {student.name}
-          </strong>
+          <strong>{student.name}</strong>
 
           <span>
             {student.grade} · {student.age} años
           </span>
-
         </button>
-
       ))}
-
     </div>
   );
 };

@@ -1,6 +1,4 @@
-
-import React, { useState } from "react";
-
+import { useState, type FormEvent } from "react";
 import "./DashboardPage.css";
 
 import DashboardHeader from "../components/dashboard/DashboardHeader";
@@ -12,8 +10,6 @@ import StudentDetails from "../components/students/StudentDetails";
 
 import ClinicalForm from "../components/clinical/ClinicalForm";
 import ClinicalHistory from "../components/clinical/ClinicalHistory";
-
-import AppointmentList from "../components/appointments/AppointmentList";
 
 import MedicationForm from "../components/medications/MedicationForm";
 import MedicationList from "../components/medications/MedicationList";
@@ -27,14 +23,10 @@ interface Student {
   lastVisit: string;
 }
 
-interface Appointment {
-  time: string;
-  student: string;
-  reason: string;
-  status: string;
-}
-
 interface MedicationReport {
+  id: string;
+  studentId: string;
+  studentName: string;
   medicine: string;
   doses: number;
   lastAdministered: string;
@@ -76,39 +68,27 @@ const initialStudents: Student[] = [
   },
 ];
 
-const initialAppointments: Appointment[] = [
-  {
-    time: "08:30",
-    student: "María Fernanda López",
-    reason: "Control posterior a medicación",
-    status: "Pendiente",
-  },
-  {
-    time: "10:00",
-    student: "Carlos Daniel Rojas",
-    reason: "Dolor de cabeza recurrente",
-    status: "En espera",
-  },
-  {
-    time: "12:15",
-    student: "Lucía Camila Vargas",
-    reason: "Revisión de historial clínico",
-    status: "Confirmada",
-  },
-];
-
 const initialMedicationReports: MedicationReport[] = [
   {
+    id: "REP-001",
+    studentId: "EST-001",
+    studentName: "María Fernanda López",
     medicine: "Paracetamol 500 mg",
     doses: 18,
     lastAdministered: "2026-08-24 09:10",
   },
   {
+    id: "REP-002",
+    studentId: "EST-014",
+    studentName: "Carlos Daniel Rojas",
     medicine: "Sales de rehidratación oral",
     doses: 7,
     lastAdministered: "2026-08-23 11:35",
   },
   {
+    id: "REP-003",
+    studentId: "EST-027",
+    studentName: "Lucía Camila Vargas",
     medicine: "Loratadina 10 mg",
     doses: 5,
     lastAdministered: "2026-08-22 08:45",
@@ -119,375 +99,286 @@ interface DashboardPageProps {
   onLogout: () => void;
 }
 
-const DashboardPage = ({
-  onLogout,
-}: DashboardPageProps) => {
-  const [students, setStudents] =
-    useState<Student[]>(initialStudents);
-
-  const [appointments] =
-    useState<Appointment[]>(initialAppointments);
+const DashboardPage = ({ onLogout }: DashboardPageProps) => {
+  const [students, setStudents] = useState<Student[]>(initialStudents);
 
   const [medicationReports, setMedicationReports] =
-    useState<MedicationReport[]>(
-      initialMedicationReports
-    );
+    useState<MedicationReport[]>(initialMedicationReports);
 
   const [clinicalEntries, setClinicalEntries] =
     useState<ClinicalEntry[]>([]);
 
-  const [selectedStudentId, setSelectedStudentId] =
-    useState<string>(
-      initialStudents[0]?.id ?? ""
-    );
-
-  const [studentSearch, setStudentSearch] =
-    useState("");
-
-  const selectedStudent =
-    students.find(
-      (student) =>
-        student.id === selectedStudentId
-    ) ?? null;
-
-  const filteredStudents = students.filter(
-    (student) => {
-      const search =
-        studentSearch.toLowerCase().trim();
-
-      return (
-        student.name
-          .toLowerCase()
-          .includes(search) ||
-        student.grade
-          .toLowerCase()
-          .includes(search) ||
-        student.id
-          .toLowerCase()
-          .includes(search)
-      );
-    }
+  const [selectedStudentId, setSelectedStudentId] = useState<string>(
+    initialStudents[0]?.id ?? ""
   );
 
-  const handleLogout = () => {
-    onLogout();
-  };
+  const [studentSearch, setStudentSearch] = useState("");
 
-  const handleStudentSubmit = (
-    event: React.FormEvent<HTMLFormElement>
-  ) => {
+  const selectedStudent =
+    students.find((student) => student.id === selectedStudentId) ?? null;
+
+  const filteredStudents = students.filter((student) => {
+    const search = studentSearch.trim().toLowerCase();
+
+    return (
+      student.name.toLowerCase().includes(search) ||
+      student.grade.toLowerCase().includes(search) ||
+      student.id.toLowerCase().includes(search)
+    );
+  });
+
+  const studentMedicationReports = selectedStudent
+    ? medicationReports.filter(
+        (report) => report.studentId === selectedStudent.id
+      )
+    : [];
+
+  const studentClinicalEntries = selectedStudent
+    ? clinicalEntries.filter(
+        (entry) => entry.studentId === selectedStudent.id
+      )
+    : [];
+
+  const handleStudentSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const formData = new FormData(
-      event.currentTarget
-    );
+    const form = event.currentTarget;
+    const formData = new FormData(form);
 
-    const name =
-      String(
-        formData.get("name") ?? ""
-      ).trim();
+    const name = String(formData.get("name") ?? "").trim();
+    const age = Number(formData.get("age") ?? 0);
+    const grade = String(formData.get("grade") ?? "").trim();
+    const allergies = String(formData.get("allergies") ?? "").trim();
 
-    const age =
-      Number(
-        formData.get("age") ?? 0
-      );
-
-    const grade =
-      String(
-        formData.get("grade") ?? ""
-      ).trim();
-
-    const allergies =
-      String(
-        formData.get("allergies") ?? ""
-      ).trim();
-
-    if (!name || !age || !grade) {
+    if (!name || age <= 0 || !grade) {
       return;
     }
 
     const newStudent: Student = {
-      id: `EST-${String(
-        students.length + 1
-      ).padStart(3, "0")}`,
+      id: `EST-${Date.now()}`,
       name,
       age,
       grade,
-      allergies:
-        allergies ||
-        "Ninguna registrada",
-      lastVisit:
-        new Date()
-          .toISOString()
-          .slice(0, 10),
+      allergies: allergies || "Ninguna registrada",
+      lastVisit: new Date().toISOString().slice(0, 10),
     };
 
-    setStudents(
-      (currentStudents) => [
-        ...currentStudents,
-        newStudent,
-      ]
-    );
-
-    setSelectedStudentId(
-      newStudent.id
-    );
-
-    event.currentTarget.reset();
+    setStudents((current) => [...current, newStudent]);
+    setSelectedStudentId(newStudent.id);
+    setStudentSearch("");
+    form.reset();
   };
 
-  const handleMedicationSubmit = (
-    event: React.FormEvent<HTMLFormElement>
-  ) => {
+  const handleMedicationSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const formData = new FormData(
-      event.currentTarget
-    );
+    if (!selectedStudent) {
+      window.alert("Selecciona un estudiante antes de guardar el reporte.");
+      return;
+    }
 
-    const medicine =
-      String(
-        formData.get("medicine") ?? ""
-      ).trim();
+    const form = event.currentTarget;
+    const formData = new FormData(form);
 
-    const doses =
-      Number(
-        formData.get("doses") ?? 0
-      );
+    const medicine = String(formData.get("medicine") ?? "").trim();
+    const doses = Number(formData.get("doses") ?? 0);
 
-    if (!medicine || !doses) {
+    if (!medicine || doses <= 0) {
       return;
     }
 
     const newReport: MedicationReport = {
+      id: `REP-${Date.now()}`,
+      studentId: selectedStudent.id,
+      studentName: selectedStudent.name,
       medicine,
       doses,
-      lastAdministered:
-        new Date().toLocaleString(
-          "es-BO"
-        ),
+      lastAdministered: new Date().toLocaleString("es-BO"),
     };
 
-    setMedicationReports(
-      (currentReports) => [
-        ...currentReports,
-        newReport,
-      ]
-    );
-
-    event.currentTarget.reset();
+    setMedicationReports((current) => [...current, newReport]);
+    form.reset();
   };
 
-  const handleClinicalSubmit = (
-    event: React.FormEvent<HTMLFormElement>
-  ) => {
+  const handleClinicalSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const formData = new FormData(
-      event.currentTarget
-    );
+    if (!selectedStudent) {
+      window.alert(
+        "Selecciona un estudiante antes de añadir una nota clínica."
+      );
+      return;
+    }
 
-    const reason =
-      String(
-        formData.get("reason") ?? ""
-      ).trim();
+    const form = event.currentTarget;
+    const formData = new FormData(form);
 
-    const note =
-      String(
-        formData.get("note") ?? ""
-      ).trim();
+    const reason = String(formData.get("reason") ?? "").trim();
+    const note = String(formData.get("note") ?? "").trim();
 
     if (!reason || !note) {
       return;
     }
 
-    if (!selectedStudent) {
-      alert(
-        "Selecciona un estudiante antes de agregar el historial clínico."
-      );
-      return;
-    }
-
     const newEntry: ClinicalEntry = {
-      id: `HIST-${String(
-        clinicalEntries.length + 1
-      ).padStart(3, "0")}`,
-      studentId:
-        selectedStudent.id,
-      studentName:
-        selectedStudent.name,
-      date:
-        new Date().toLocaleString(
-          "es-BO"
-        ),
+      id: `HIST-${Date.now()}`,
+      studentId: selectedStudent.id,
+      studentName: selectedStudent.name,
+      date: new Date().toLocaleString("es-BO"),
       reason,
       note,
     };
 
-    setClinicalEntries(
-      (currentEntries) => [
-        ...currentEntries,
-        newEntry,
-      ]
-    );
-
-    event.currentTarget.reset();
+    setClinicalEntries((current) => [...current, newEntry]);
+    form.reset();
   };
 
   return (
     <div className="dashboard-page">
-      <DashboardHeader
-        onLogout={handleLogout}
-      />
+      <DashboardHeader onLogout={onLogout} />
 
       <main className="dashboard-container">
         <section className="dashboard-welcome">
-          <p className="dashboard-label">
-            PANEL DE ENFERMERÍA
-          </p>
+          <p className="dashboard-label">PANEL DE ENFERMERÍA</p>
 
-          <h1>
-            Panel de control
-          </h1>
+          <h1>Panel de control</h1>
 
           <p>
-            Gestiona estudiantes,
-            atenciones, medicamentos
-            e historias clínicas.
+            Gestiona estudiantes, medicamentos e historias clínicas.
           </p>
         </section>
 
         <MetricGrid
           students={students.length}
-          appointments={
-            appointments.length
-          }
           doses={medicationReports.reduce(
-            (
-              total,
-              report
-            ) =>
-              total +
-              report.doses,
+            (total, report) => total + report.doses,
             0
           )}
-          histories={
-            clinicalEntries.length
-          }
+          histories={clinicalEntries.length}
         />
 
         <section className="dashboard-content">
           <section className="dashboard-students">
-            <h2>
-              Estudiantes
-            </h2>
+            <h2>Estudiantes</h2>
 
-            <StudentForm
-              onSubmit={
-                handleStudentSubmit
-              }
-            />
+            <StudentForm onSubmit={handleStudentSubmit} />
 
             <div className="student-search">
               <input
                 type="text"
-                placeholder="Buscar estudiante..."
-                value={
-                  studentSearch
-                }
-                onChange={(event) =>
-                  setStudentSearch(
-                    event.target.value
-                  )
-                }
+                placeholder="Buscar estudiante por nombre, curso o ID..."
+                value={studentSearch}
+                onChange={(event) => setStudentSearch(event.target.value)}
               />
             </div>
 
-            {filteredStudents.length >
-            0 ? (
+            {filteredStudents.length > 0 ? (
               <StudentList
-                students={
-                  filteredStudents
-                }
-                selectedStudentId={
-                  selectedStudentId
-                }
-                onSelect={
-                  setSelectedStudentId
-                }
+                students={filteredStudents}
+                selectedStudentId={selectedStudentId}
+                onSelect={setSelectedStudentId}
               />
             ) : (
               <div className="empty-state">
-                <h3>
-                  No se encontraron estudiantes
-                </h3>
-
-                <p>
-                  Intenta buscar por
-                  nombre, curso o ID.
-                </p>
+                <h3>No se encontraron estudiantes</h3>
+                <p>Intenta buscar por nombre, curso o ID.</p>
               </div>
             )}
           </section>
 
           <section className="dashboard-details">
             {selectedStudent ? (
-              <StudentDetails
-                student={
-                  selectedStudent
-                }
-              />
+              <StudentDetails student={selectedStudent} />
             ) : (
               <div className="empty-state">
-                <h3>
-                  Selecciona un estudiante
-                </h3>
-
+                <h3>Selecciona un estudiante</h3>
                 <p>
-                  Selecciona un
-                  estudiante de la
-                  lista para ver sus
-                  datos.
+                  Selecciona un estudiante para consultar sus datos y registros.
                 </p>
               </div>
             )}
           </section>
         </section>
 
-        <section className="dashboard-secondary">
-          <AppointmentList
-            appointments={
-              appointments
-            }
-          />
+        <section className="dashboard-medication-section">
+          <div className="dashboard-section-heading">
+            <div>
+              <p className="dashboard-section-label">
+                REGISTRO DE ATENCIONES
+              </p>
+              <h2>Reporte de medicamentos</h2>
+            </div>
+          </div>
 
-          <section className="dashboard-medications">
-            <MedicationForm
-              onSubmit={
-                handleMedicationSubmit
-              }
-            />
+          {selectedStudent ? (
+            <>
+              <p>
+                Estudiante seleccionado: <strong>{selectedStudent.name}</strong>
+              </p>
 
-            <MedicationList
-              reports={
-                medicationReports
-              }
-            />
-          </section>
+              <div className="dashboard-medication-grid">
+                <MedicationForm onSubmit={handleMedicationSubmit} />
+                <MedicationList reports={studentMedicationReports} />
+              </div>
+            </>
+          ) : (
+            <div className="empty-state">
+              <h3>Selecciona un estudiante</h3>
+              <p>
+                Debes seleccionar un estudiante antes de registrar medicamentos
+                o consultar sus reportes.
+              </p>
+            </div>
+          )}
         </section>
 
         <section className="dashboard-clinical">
-          <ClinicalForm
-            onSubmit={
-              handleClinicalSubmit
-            }
-          />
+          <section>
+            <p className="dashboard-section-label">
+              ATENCIÓN DE ENFERMERÍA
+            </p>
 
-          <ClinicalHistory
-            entries={
-              clinicalEntries
-            }
-          />
+            <h2>Registrar nota clínica</h2>
+
+            {selectedStudent ? (
+              <>
+                <p>
+                  Estudiante seleccionado:{" "}
+                  <strong>{selectedStudent.name}</strong>
+                </p>
+
+                <ClinicalForm onSubmit={handleClinicalSubmit} />
+              </>
+            ) : (
+              <div className="empty-state">
+                <p>
+                  Selecciona un estudiante para añadir notas a su historial
+                  clínico.
+                </p>
+              </div>
+            )}
+          </section>
+
+          <section>
+            <p className="dashboard-section-label">
+              REGISTROS DEL ESTUDIANTE
+            </p>
+
+            <h2>
+              Historial clínico
+              {selectedStudent ? ` · ${selectedStudent.name}` : ""}
+            </h2>
+
+            {selectedStudent ? (
+              <ClinicalHistory entries={studentClinicalEntries} />
+            ) : (
+              <div className="empty-state">
+                <p>
+                  Selecciona un estudiante para consultar su historial clínico.
+                </p>
+              </div>
+            )}
+          </section>
         </section>
       </main>
     </div>

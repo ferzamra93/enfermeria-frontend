@@ -1,29 +1,22 @@
+
 import MetricCard from "./MetricCard";
 
 interface MetricGridProps {
   students: number;
-  appointments: number;
   doses: number;
   histories: number;
 }
 
 const MetricGrid = ({
   students,
-  appointments,
   doses,
   histories,
 }: MetricGridProps) => {
   return (
     <section className="metric-grid">
-
       <MetricCard
         value={students}
         title="Estudiantes registrados"
-      />
-
-      <MetricCard
-        value={appointments}
-        title="Atenciones en calendario"
       />
 
       <MetricCard
@@ -33,9 +26,8 @@ const MetricGrid = ({
 
       <MetricCard
         value={histories}
-        title="Historias clínicas actualizadas"
+        title="Historias clínicas registradas"
       />
-
     </section>
   );
 };

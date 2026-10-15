@@ -1,57 +1,64 @@
-import { Link } from "react-router-dom";
+import { NavLink, Link } from "react-router-dom";
 import "./Navbar.css";
 
 const Navbar = () => {
   return (
     <header className="navbar">
       <div className="navbar-container">
-
-        {/* LOGO */}
         <Link to="/" className="navbar-logo">
           <div className="logo-icon">
             <span>+</span>
           </div>
 
           <div className="logo-text">
-            <span className="logo-title">Enfermería</span>
+            <span className="logo-title">Sistema de Enfermería</span>
             <span className="logo-subtitle">
-              Tu cuidado, nuestra prioridad
+              Cuidar, acompañar y proteger
             </span>
           </div>
         </Link>
 
-        {/* MENÚ */}
-        <nav className="navbar-menu">
-          <Link to="/" className="nav-link active">
-            <span className="nav-icon">⌂</span>
+        <nav className="navbar-menu" aria-label="Navegación principal">
+          <NavLink
+            to="/"
+            end
+            className={({ isActive }) =>
+              `nav-link ${isActive ? "active" : ""}`
+            }
+          >
             Inicio
-          </Link>
+          </NavLink>
 
-          <Link to="/nosotros" className="nav-link">
-            <span className="nav-icon">👥</span>
-            Nosotros
-          </Link>
-
-          <Link to="/servicios" className="nav-link">
-            <span className="nav-icon">▣</span>
-            Servicios
-          </Link>
-
-          <Link to="/contacto" className="nav-link">
-            <span className="nav-icon">✉</span>
-            Contacto
-          </Link>
+          <a
+              href="https://donboscosucre.edu.bo/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="nav-link"
+            >
+              Nosotros
+          </a>
         </nav>
 
-        {/* BOTÓN LOGIN */}
         <Link to="/login" className="login-button">
-          <span className="login-icon">
-            <span className="user-symbol">👤</span>
+          <span className="login-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path
+                d="M20 21a8 8 0 0 0-16 0"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+              />
+              <circle
+                cx="12"
+                cy="7"
+                r="4"
+                stroke="currentColor"
+                strokeWidth="1.8"
+              />
+            </svg>
           </span>
-
-          <span>Iniciar Sesión</span>
+          <span>Iniciar sesión</span>
         </Link>
-
       </div>
     </header>
   );

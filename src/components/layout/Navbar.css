@@ -1,319 +1,245 @@
-/* ========================================
-   NAVBAR
-======================================== */
 
 .navbar {
-  width: 100%;
-  height: 82px;
-
   position: sticky;
   top: 0;
   z-index: 1000;
-
+  width: 100%;
+  min-height: 84px;
   background: rgba(255, 255, 255, 0.97);
-
-  border-bottom: 1px solid #eeeeee;
-
-  box-shadow: 0 2px 12px rgba(40, 30, 70, 0.05);
+  border-bottom: 1px solid #e5e7eb;
+  box-shadow: 0 4px 18px rgba(15, 39, 71, 0.06);
+  backdrop-filter: blur(12px);
 }
 
-
-/* ========================================
-   CONTENEDOR
-======================================== */
-
 .navbar-container {
-  width: 100%;
-  max-width: 1350px;
-  height: 100%;
-
+  width: min(100% - 64px, 1320px);
+  min-height: 84px;
   margin: 0 auto;
-  padding: 0 35px;
-
   display: flex;
   align-items: center;
   justify-content: space-between;
-
-  box-sizing: border-box;
+  gap: 32px;
 }
 
-
-/* ========================================
-   LOGO
-======================================== */
-
 .navbar-logo {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-
-  gap: 12px;
-
-  min-width: 260px;
-
+  gap: 13px;
+  flex-shrink: 0;
   color: inherit;
   text-decoration: none;
 }
 
 .logo-icon {
-  width: 48px;
-  height: 48px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
   position: relative;
-
-  border: 3px solid #7b3fd3;
-  border-radius: 50%;
-
-  color: #7b3fd3;
-
-  font-size: 25px;
-  font-weight: 800;
-
-  box-sizing: border-box;
-}
-
-.logo-icon::before {
-  content: "";
-
-  position: absolute;
-
+  display: grid;
   width: 48px;
   height: 48px;
-
-  border: 3px solid #7b3fd3;
-  border-radius: 50%;
-
-  transform: rotate(45deg);
-
-  opacity: 0.9;
-
-  box-sizing: border-box;
+  place-items: center;
+  flex-shrink: 0;
+  border-radius: 14px;
+  background: #102d50;
+  color: #fff;
+  box-shadow: 0 5px 12px rgba(16, 45, 80, 0.18);
 }
 
 .logo-icon span {
-  position: relative;
-  z-index: 2;
+  font-size: 34px;
+  font-weight: 400;
+  line-height: 1;
 }
 
 .logo-text {
   display: flex;
   flex-direction: column;
-
-  line-height: 1.1;
+  gap: 5px;
 }
 
 .logo-title {
-  color: #7438d0;
-
-  font-size: 22px;
+  color: #102d50;
+  font-size: 19px;
   font-weight: 800;
+  letter-spacing: -0.4px;
 }
 
 .logo-subtitle {
-  margin-top: 5px;
-
-  color: #5f6472;
-
-  font-size: 13px;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 500;
 }
 
-
-/* ========================================
-   MENÚ
-======================================== */
-
 .navbar-menu {
-  height: 100%;
-
   display: flex;
   align-items: center;
-
-  gap: 38px;
+  align-self: stretch;
+  gap: 30px;
 }
 
 .nav-link {
-  height: 100%;
-
   position: relative;
-
-  display: flex;
+  display: inline-flex;
   align-items: center;
-
-  gap: 8px;
-
-  color: #252b43;
-
+  color: #475569;
   text-decoration: none;
-
-  font-size: 15px;
-  font-weight: 600;
-
-  transition: color 0.2s ease;
+  font-size: 14px;
+  font-weight: 650;
+  transition: color 180ms ease;
 }
 
-.nav-link:hover {
-  color: #7438d0;
-}
-
-.nav-link.active {
-  color: #7438d0;
-}
-
-.nav-link.active::after {
-  content: "";
-
+.nav-link::after {
   position: absolute;
-
-  left: 0;
   right: 0;
-  bottom: 6px;
-
+  bottom: 0;
+  left: 0;
   height: 3px;
-
-  border-radius: 5px;
-
-  background: #843dd2;
+  border-radius: 3px 3px 0 0;
+  background: #c69b45;
+  content: "";
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 180ms ease;
 }
 
-.nav-icon {
-  font-size: 16px;
+.nav-link:hover,
+.nav-link.active {
+  color: #102d50;
 }
 
-
-/* ========================================
-   BOTÓN LOGIN
-======================================== */
+.nav-link:hover::after,
+.nav-link.active::after {
+  transform: scaleX(1);
+}
 
 .login-button {
-  display: flex;
+  display: inline-flex;
+  min-height: 46px;
   align-items: center;
   justify-content: center;
-
-  gap: 7px;
-
-  width: 140px;
-  height: 42px;
-
-  padding: 0 12px;
-
-  box-sizing: border-box;
-
+  gap: 10px;
+  padding: 0 20px;
+  border: 1px solid #102d50;
   border-radius: 7px;
-
-  background: #7b3fd3;
-  color: white;
-
+  background: #102d50;
+  color: #fff;
   text-decoration: none;
-
-  font-size: 12px;
-  font-weight: 700;
-
   white-space: nowrap;
-
-  box-shadow: 0 4px 12px rgba(123, 63, 211, 0.20);
-
+  font-size: 13px;
+  font-weight: 750;
+  line-height: 1;
+  box-shadow: 0 5px 12px rgba(16, 45, 80, 0.13);
   transition:
-    background 0.2s ease,
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
+    background 180ms ease,
+    border-color 180ms ease,
+    transform 180ms ease;
 }
 
 .login-button:hover {
-  background: #6630b5;
-
-  transform: translateY(-2px);
-
-  box-shadow: 0 7px 15px rgba(123, 63, 211, 0.25);
+  transform: translateY(-1px);
+  border-color: #c69b45;
+  background: #173e68;
 }
 
-
-/* ========================================
-   ICONO DEL LOGIN
-======================================== */
-.login-button .login-icon {
-  width: 24px !important;
-  height: 24px !important;
-
-  min-width: 24px !important;
-  min-height: 24px !important;
-  max-width: 24px !important;
-  max-height: 24px !important;
-
-  padding: 0 !important;
-  margin: 0 !important;
-
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-
-  background: white !important;
-  border-radius: 50% !important;
-
-  box-sizing: border-box !important;
-
-  position: static !important;
-
-  overflow: hidden !important;
+.login-icon {
+  display: inline-flex;
+  width: 23px;
+  height: 23px;
+  flex: 0 0 23px;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border-radius: 50%;
+  background: #fff;
+  color: #102d50;
+  line-height: 0;
 }
 
-.login-button .user-symbol {
-  font-size: 10px !important;
-  line-height: 1 !important;
-
-  margin: 0 !important;
-  padding: 0 !important;
-
-  position: static !important;
+.login-icon svg {
+  display: block;
+  width: 15px;
+  height: 15px;
+  flex: 0 0 15px;
+  margin: 0;
+  padding: 0;
+  overflow: visible;
 }
 
-/* ========================================
-   RESPONSIVE - TABLET
-======================================== */
-
-@media (max-width: 1000px) {
-
+@media (max-width: 1050px) {
   .navbar-container {
-    padding: 0 20px;
-  }
-
-  .navbar-logo {
-    min-width: auto;
-  }
-
-  .navbar-menu {
+    width: calc(100% - 40px);
     gap: 20px;
   }
 
-  .nav-link {
-    font-size: 14px;
+  .navbar-menu {
+    gap: 18px;
   }
 
+  .logo-title {
+    font-size: 17px;
+  }
+
+  .logo-subtitle {
+    font-size: 11px;
+  }
 }
 
-
-/* ========================================
-   RESPONSIVE - CELULAR
-======================================== */
-
-@media (max-width: 750px) {
-
-  .navbar {
-    height: 70px;
+@media (max-width: 780px) {
+  .navbar,
+  .navbar-container {
+    min-height: 72px;
   }
 
   .navbar-container {
-    padding: 0 15px;
+    width: calc(100% - 30px);
+    gap: 12px;
   }
 
   .navbar-menu {
     display: none;
   }
 
+  .logo-icon {
+    width: 42px;
+    height: 42px;
+  }
+
   .logo-title {
-    font-size: 18px;
+    font-size: 15px;
+  }
+
+  .logo-subtitle {
+    font-size: 10px;
+  }
+
+  .login-button {
+    min-height: 42px;
+    gap: 7px;
+    padding: 0 12px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 420px) {
+  .navbar-container {
+    width: calc(100% - 20px);
+  }
+
+  .navbar-logo {
+    gap: 8px;
+  }
+
+  .logo-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+  }
+
+  .logo-icon span {
+    font-size: 28px;
+  }
+
+  .logo-title {
+    max-width: 135px;
+    font-size: 13px;
   }
 
   .logo-subtitle {
@@ -321,22 +247,20 @@
   }
 
   .login-button {
-    height: 44px;
-    min-height: 44px;
-
-    padding: 0 14px;
-
-    font-size: 14px;
+    gap: 6px;
+    padding: 0 9px;
+    font-size: 11px;
   }
 
   .login-icon {
-    width: 28px;
-    height: 28px;
-
-    min-width: 28px;
-    min-height: 28px;
-
-    font-size: 13px;
+    width: 20px;
+    height: 20px;
+    flex-basis: 20px;
   }
 
+  .login-icon svg {
+    width: 13px;
+    height: 13px;
+    flex-basis: 13px;
+  }
 }
