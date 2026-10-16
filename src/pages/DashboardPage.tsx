@@ -25,6 +25,7 @@ interface AdminStudent {
   id: string;
   name: string;
   detail: string;
+  age?: number;
   carnet?: string;
   allergies?: string;
   active: boolean;
