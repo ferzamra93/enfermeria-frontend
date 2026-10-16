@@ -91,13 +91,14 @@ const AdminPage = ({ onLogout }: AdminPageProps) => {
     if (!name.trim() || !detail.trim()) return;
 
     const recordData = {
-      name: name.trim(),
-      detail: detail.trim(),
-      allergies:
-        section === "estudiantes"
-          ? allergies.trim() || "Ninguna registrada"
-          : "",
-    };
+  name: name.trim(),
+  detail: detail.trim(),
+  allergies:
+    section === "estudiantes"
+      ? allergies.trim() || "Ninguna registrada"
+      : "",
+  age: section === "estudiantes" ? Number(age) : undefined,
+};
 
     if (section === "estudiantes") {
       if (editingId) {
