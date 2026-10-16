@@ -1,15 +1,13 @@
+
 import { useEffect, useState, type FormEvent } from "react";
 import "./DashboardPage.css";
 
 import DashboardHeader from "../components/dashboard/DashboardHeader";
 import MetricGrid from "../components/dashboard/MetricGrid";
-
 import StudentList from "../components/students/StudentList";
 import StudentDetails from "../components/students/StudentDetails";
-
 import ClinicalForm from "../components/clinical/ClinicalForm";
 import ClinicalHistory from "../components/clinical/ClinicalHistory";
-
 import MedicationForm from "../components/medications/MedicationForm";
 import MedicationList from "../components/medications/MedicationList";
 
@@ -30,6 +28,7 @@ interface AdminStudent {
   carnet?: string;
   allergies?: string;
   active: boolean;
+  [key: string]: unknown;
 }
 
 interface MedicationReport {
@@ -96,11 +95,15 @@ const DashboardPage = ({ onLogout }: DashboardPageProps) => {
       readStorage<ClinicalEntry[]>(CLINICAL_KEY, [])
     );
 
-  const [selectedStudentId, setSelectedStudentId] = useState<string>(
+  const [selectedStudentId, setSelectedStudentId] = useState(
     () => getActiveStudents()[0]?.id ?? ""
   );
 
   const [studentSearch, setStudentSearch] = useState("");
+  const [editingStudent, setEditingStudent] = useState(false);
+  const [editName, setEditName] = useState("");
+  const [editGrade, setEditGrade] = useState("");
+  const [editAllergies, setEditAllergies] = useState("");
 
   useEffect(() => {
     localStorage.setItem(
@@ -122,7 +125,6 @@ const DashboardPage = ({ onLogout }: DashboardPageProps) => {
         if (updatedStudents.some((student) => student.id === currentId)) {
           return currentId;
         }
-
         return updatedStudents[0]?.id ?? "";
       });
     };
@@ -160,6 +162,72 @@ const DashboardPage = ({ onLogout }: DashboardPageProps) => {
       )
     : [];
 
+  const startEditingStudent = () => {
+    if (!selectedStudent) return;
+
+    setEditName(selectedStudent.name);
+    setEditGrade(selectedStudent.grade);
+    setEditAllergies(
+      selectedStudent.allergies === "Ninguna registrada"
+        ? ""
+        : selectedStudent.allergies
+    );
+    setEditingStudent(true);
+  };
+
+  const handleStudentEditSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (!selectedStudent || !editName.trim() || !editGrade.trim()) {
+      window.alert("Completa el nombre y el curso del estudiante.");
+      return;
+    }
+
+    const savedStudents = readStorage<AdminStudent[]>(STUDENTS_KEY, []);
+    const studentExists = savedStudents.some(
+      (student) => student.id === selectedStudent.id
+    );
+
+    if (!studentExists) {
+      window.alert(
+        "No se encontró el estudiante guardado. Actualiza la página e inténtalo de nuevo."
+      );
+      return;
+    }
+
+    const updatedStudents = savedStudents.map((student) =>
+      student.id === selectedStudent.id
+        ? {
+            ...student,
+            name: editName.trim(),
+            detail: editGrade.trim(),
+            allergies: editAllergies.trim() || "Ninguna registrada",
+          }
+        : student
+    );
+
+    localStorage.setItem(STUDENTS_KEY, JSON.stringify(updatedStudents));
+
+    setStudents(getActiveStudents());
+    setMedicationReports((current) =>
+      current.map((report) =>
+        report.studentId === selectedStudent.id
+          ? { ...report, studentName: editName.trim() }
+          : report
+      )
+    );
+    setClinicalEntries((current) =>
+      current.map((entry) =>
+        entry.studentId === selectedStudent.id
+          ? { ...entry, studentName: editName.trim() }
+          : entry
+      )
+    );
+
+    setEditingStudent(false);
+    window.alert("Los datos del estudiante se actualizaron correctamente.");
+  };
+
   const handleMedicationSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -170,7 +238,6 @@ const DashboardPage = ({ onLogout }: DashboardPageProps) => {
 
     const form = event.currentTarget;
     const formData = new FormData(form);
-
     const medicine = String(formData.get("medicine") ?? "").trim();
     const doses = Number(formData.get("doses") ?? 0);
 
@@ -204,7 +271,6 @@ const DashboardPage = ({ onLogout }: DashboardPageProps) => {
 
     const form = event.currentTarget;
     const formData = new FormData(form);
-
     const reason = String(formData.get("reason") ?? "").trim();
     const note = String(formData.get("note") ?? "").trim();
 
@@ -266,7 +332,10 @@ const DashboardPage = ({ onLogout }: DashboardPageProps) => {
               <StudentList
                 students={filteredStudents}
                 selectedStudentId={selectedStudentId}
-                onSelect={setSelectedStudentId}
+                onSelect={(id) => {
+                  setSelectedStudentId(id);
+                  setEditingStudent(false);
+                }}
               />
             ) : (
               <div className="empty-state">
@@ -286,7 +355,67 @@ const DashboardPage = ({ onLogout }: DashboardPageProps) => {
 
           <section className="dashboard-details">
             {selectedStudent ? (
-              <StudentDetails student={selectedStudent} />
+              <>
+                <StudentDetails student={selectedStudent} />
+
+                {!editingStudent ? (
+                  <button
+                    type="button"
+                    className="admin-primary-button"
+                    onClick={startEditingStudent}
+                  >
+                    Editar datos del estudiante
+                  </button>
+                ) : (
+                  <form
+                    className="admin-form"
+                    onSubmit={handleStudentEditSubmit}
+                  >
+                    <h3>Editar estudiante</h3>
+
+                    <label>
+                      Nombre completo
+                      <input
+                        value={editName}
+                        onChange={(event) => setEditName(event.target.value)}
+                        required
+                      />
+                    </label>
+
+                    <label>
+                      Curso o nivel
+                      <input
+                        value={editGrade}
+                        onChange={(event) => setEditGrade(event.target.value)}
+                        required
+                      />
+                    </label>
+
+                    <label>
+                      Alergias
+                      <textarea
+                        value={editAllergies}
+                        onChange={(event) =>
+                          setEditAllergies(event.target.value)
+                        }
+                        rows={2}
+                      />
+                    </label>
+
+                    <button className="admin-primary-button" type="submit">
+                      Guardar cambios
+                    </button>
+
+                    <button
+                      className="admin-action-button"
+                      type="button"
+                      onClick={() => setEditingStudent(false)}
+                    >
+                      Cancelar
+                    </button>
+                  </form>
+                )}
+              </>
             ) : (
               <div className="empty-state">
                 <h3>Selecciona un estudiante</h3>
