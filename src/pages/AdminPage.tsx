@@ -1,3 +1,4 @@
+
 import { useEffect, useState, type FormEvent } from "react";
 import { authRepository } from "../repositories/authRepository";
 import "./AdminPage.css";
@@ -56,6 +57,7 @@ const AdminPage = ({ onLogout }: AdminPageProps) => {
   const [allergies, setAllergies] = useState("");
   const [quantity, setQuantity] = useState("1");
   const [expiration, setExpiration] = useState("");
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   const currentUser = authRepository.getCurrentUser();
 
@@ -77,6 +79,7 @@ const AdminPage = ({ onLogout }: AdminPageProps) => {
     setAllergies("");
     setQuantity("1");
     setExpiration("");
+    setEditingId(null);
   };
 
   const handleRecordSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -84,24 +87,64 @@ const AdminPage = ({ onLogout }: AdminPageProps) => {
 
     if (!name.trim() || !detail.trim()) return;
 
-    const record: ManagedRecord = {
-      id: crypto.randomUUID(),
+    const recordData = {
       name: name.trim(),
       detail: detail.trim(),
       allergies:
         section === "estudiantes"
           ? allergies.trim() || "Ninguna registrada"
           : "",
-      active: true,
     };
 
     if (section === "estudiantes") {
-      setStudents((current) => [...current, record]);
+      if (editingId) {
+        setStudents((current) =>
+          current.map((item) =>
+            item.id === editingId
+              ? { ...item, ...recordData }
+              : item
+          )
+        );
+      } else {
+        setStudents((current) => [
+          ...current,
+          {
+            id: crypto.randomUUID(),
+            ...recordData,
+            active: true,
+          },
+        ]);
+      }
     } else {
-      setStaff((current) => [...current, record]);
+      if (editingId) {
+        setStaff((current) =>
+          current.map((item) =>
+            item.id === editingId
+              ? { ...item, ...recordData }
+              : item
+          )
+        );
+      } else {
+        setStaff((current) => [
+          ...current,
+          {
+            id: crypto.randomUUID(),
+            ...recordData,
+            active: true,
+          },
+        ]);
+      }
     }
 
     resetForm();
+  };
+
+  const startEditing = (record: ManagedRecord) => {
+    setEditingId(record.id);
+    setName(record.name);
+    setDetail(record.detail);
+    setAllergies(record.allergies || "");
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleInventorySubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -137,6 +180,10 @@ const AdminPage = ({ onLogout }: AdminPageProps) => {
           item.id === id ? { ...item, active: !item.active } : item
         )
       );
+    }
+
+    if (editingId === id) {
+      resetForm();
     }
   };
 
@@ -262,7 +309,7 @@ const AdminPage = ({ onLogout }: AdminPageProps) => {
                 >
                   <span>♙</span>
                   <strong>Gestionar estudiantes</strong>
-                  <small>Registrar y dar de baja</small>
+                  <small>Registrar, editar y dar de baja</small>
                 </button>
 
                 <button type="button" onClick={() => setSection("personal")}>
@@ -296,8 +343,8 @@ const AdminPage = ({ onLogout }: AdminPageProps) => {
 
                 <p>
                   {section === "estudiantes"
-                    ? "Registra estudiantes y cambia su estado cuando corresponda."
-                    : "Registra al personal y administra su estado."}
+                    ? "Registra, edita estudiantes y cambia su estado."
+                    : "Registra, edita al personal y administra su estado."}
                 </p>
               </div>
 
@@ -345,9 +392,25 @@ const AdminPage = ({ onLogout }: AdminPageProps) => {
                 </label>
               )}
 
-              <button className="admin-primary-button" type="submit">
-                + Registrar
-              </button>
+              <div className="admin-form-actions">
+                <button className="admin-primary-button" type="submit">
+                  {editingId
+                    ? "Guardar cambios"
+                    : section === "estudiantes"
+                      ? "+ Registrar estudiante"
+                      : "+ Registrar personal"}
+                </button>
+
+                {editingId && (
+                  <button
+                    className="admin-action-button"
+                    type="button"
+                    onClick={resetForm}
+                  >
+                    Cancelar edición
+                  </button>
+                )}
+              </div>
             </form>
 
             <div className="admin-table-wrap">
@@ -358,7 +421,7 @@ const AdminPage = ({ onLogout }: AdminPageProps) => {
                     <th>{section === "estudiantes" ? "Curso" : "Carnet"}</th>
                     {section === "estudiantes" && <th>Alergias</th>}
                     <th>Estado</th>
-                    <th>Acción</th>
+                    <th>Acciones</th>
                   </tr>
                 </thead>
 
@@ -385,13 +448,23 @@ const AdminPage = ({ onLogout }: AdminPageProps) => {
                       </td>
 
                       <td>
-                        <button
-                          className="admin-action-button"
-                          type="button"
-                          onClick={() => toggleRecord(item.id)}
-                        >
-                          {item.active ? "Dar de baja" : "Reactivar"}
-                        </button>
+                        <div className="admin-form-actions">
+                          <button
+                            className="admin-action-button"
+                            type="button"
+                            onClick={() => startEditing(item)}
+                          >
+                            Editar
+                          </button>
+
+                          <button
+                            className="admin-action-button"
+                            type="button"
+                            onClick={() => toggleRecord(item.id)}
+                          >
+                            {item.active ? "Dar de baja" : "Reactivar"}
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
