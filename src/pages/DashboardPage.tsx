@@ -75,7 +75,7 @@ const getActiveStudents = (): Student[] => {
     .map((student) => ({
       id: student.id,
       name: student.name,
-      age: 0,
+      age: student.age ?? 0,
       grade: student.detail,
       allergies: student.allergies?.trim() || "Ninguna registrada",
       lastVisit: "Sin atenciones registradas",
