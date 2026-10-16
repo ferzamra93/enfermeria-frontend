@@ -10,6 +10,7 @@ interface ManagedRecord {
   name: string;
   detail: string;
   allergies: string;
+  age?: number;
   active: boolean;
 }
 
@@ -55,6 +56,7 @@ const AdminPage = ({ onLogout }: AdminPageProps) => {
   const [name, setName] = useState("");
   const [detail, setDetail] = useState("");
   const [allergies, setAllergies] = useState("");
+  const [age, setAge] = useState("");
   const [quantity, setQuantity] = useState("1");
   const [expiration, setExpiration] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -77,6 +79,7 @@ const AdminPage = ({ onLogout }: AdminPageProps) => {
     setName("");
     setDetail("");
     setAllergies("");
+    setAge("");
     setQuantity("1");
     setExpiration("");
     setEditingId(null);
@@ -363,7 +366,20 @@ const AdminPage = ({ onLogout }: AdminPageProps) => {
                   required
                 />
               </label>
-
+              {section === "estudiantes" && (
+              <label>
+                Edad
+                <input
+                  type="number"
+                  min="1"
+                  max="120"
+                  value={age}
+                  onChange={(event) => setAge(event.target.value)}
+                  placeholder="Edad en años"
+                  required
+                />
+              </label>
+)}
               <label>
                 {section === "estudiantes"
                   ? "Curso o nivel"
