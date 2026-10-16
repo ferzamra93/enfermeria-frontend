@@ -1,10 +1,9 @@
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import "./DashboardPage.css";
 
 import DashboardHeader from "../components/dashboard/DashboardHeader";
 import MetricGrid from "../components/dashboard/MetricGrid";
 
-import StudentForm from "../components/students/StudentForm";
 import StudentList from "../components/students/StudentList";
 import StudentDetails from "../components/students/StudentDetails";
 
@@ -21,6 +20,16 @@ interface Student {
   grade: string;
   allergies: string;
   lastVisit: string;
+  carnet: string;
+}
+
+interface AdminStudent {
+  id: string;
+  name: string;
+  detail: string;
+  carnet?: string;
+  allergies?: string;
+  active: boolean;
 }
 
 interface MedicationReport {
@@ -41,78 +50,89 @@ interface ClinicalEntry {
   note: string;
 }
 
-const initialStudents: Student[] = [
-  {
-    id: "EST-001",
-    name: "María Fernanda López",
-    age: 16,
-    grade: "5º Secundaria",
-    allergies: "Penicilina",
-    lastVisit: "2026-08-24",
-  },
-  {
-    id: "EST-014",
-    name: "Carlos Daniel Rojas",
-    age: 15,
-    grade: "4º Secundaria",
-    allergies: "Ninguna registrada",
-    lastVisit: "2026-08-20",
-  },
-  {
-    id: "EST-027",
-    name: "Lucía Camila Vargas",
-    age: 17,
-    grade: "6º Secundaria",
-    allergies: "Ibuprofeno",
-    lastVisit: "2026-08-18",
-  },
-];
-
-const initialMedicationReports: MedicationReport[] = [
-  {
-    id: "REP-001",
-    studentId: "EST-001",
-    studentName: "María Fernanda López",
-    medicine: "Paracetamol 500 mg",
-    doses: 18,
-    lastAdministered: "2026-08-24 09:10",
-  },
-  {
-    id: "REP-002",
-    studentId: "EST-014",
-    studentName: "Carlos Daniel Rojas",
-    medicine: "Sales de rehidratación oral",
-    doses: 7,
-    lastAdministered: "2026-08-23 11:35",
-  },
-  {
-    id: "REP-003",
-    studentId: "EST-027",
-    studentName: "Lucía Camila Vargas",
-    medicine: "Loratadina 10 mg",
-    doses: 5,
-    lastAdministered: "2026-08-22 08:45",
-  },
-];
-
 interface DashboardPageProps {
   onLogout: () => void;
 }
 
+const STUDENTS_KEY = "admin_students";
+const MEDICATIONS_KEY = "nursing_medication_reports";
+const CLINICAL_KEY = "nursing_clinical_entries";
+
+const readStorage = <T,>(key: string, fallback: T): T => {
+  try {
+    const saved = localStorage.getItem(key);
+    return saved ? (JSON.parse(saved) as T) : fallback;
+  } catch {
+    return fallback;
+  }
+};
+
+const getActiveStudents = (): Student[] => {
+  const adminStudents = readStorage<AdminStudent[]>(STUDENTS_KEY, []);
+
+  return adminStudents
+    .filter((student) => student.active)
+    .map((student) => ({
+      id: student.id,
+      name: student.name,
+      age: 0,
+      grade: student.detail,
+      allergies: student.allergies?.trim() || "Ninguna registrada",
+      lastVisit: "Sin atenciones registradas",
+      carnet: student.carnet || "",
+    }));
+};
+
 const DashboardPage = ({ onLogout }: DashboardPageProps) => {
-  const [students, setStudents] = useState<Student[]>(initialStudents);
+  const [students, setStudents] = useState<Student[]>(getActiveStudents);
 
   const [medicationReports, setMedicationReports] =
-    useState<MedicationReport[]>(initialMedicationReports);
+    useState<MedicationReport[]>(() =>
+      readStorage<MedicationReport[]>(MEDICATIONS_KEY, [])
+    );
 
   const [clinicalEntries, setClinicalEntries] =
-    useState<ClinicalEntry[]>([]);
+    useState<ClinicalEntry[]>(() =>
+      readStorage<ClinicalEntry[]>(CLINICAL_KEY, [])
+    );
 
   const [selectedStudentId, setSelectedStudentId] = useState<string>(
-    initialStudents[0]?.id ?? ""
+    () => getActiveStudents()[0]?.id ?? ""
   );
 
   const [studentSearch, setStudentSearch] = useState("");
+
+  useEffect(() => {
+    localStorage.setItem(
+      MEDICATIONS_KEY,
+      JSON.stringify(medicationReports)
+    );
+  }, [medicationReports]);
+
+  useEffect(() => {
+    localStorage.setItem(CLINICAL_KEY, JSON.stringify(clinicalEntries));
+  }, [clinicalEntries]);
+
+  useEffect(() => {
+    const refreshStudents = () => {
+      const updatedStudents = getActiveStudents();
+      setStudents(updatedStudents);
+
+      setSelectedStudentId((currentId) => {
+        if (updatedStudents.some((student) => student.id === currentId)) {
+          return currentId;
+        }
+
+        return updatedStudents[0]?.id ?? "";
+      });
+    };
+
+    window.addEventListener("storage", refreshStudents);
+
+    return () => {
+      window.removeEventListener("storage", refreshStudents);
+    };
+  }, []);
 
   const selectedStudent =
     students.find((student) => student.id === selectedStudentId) ?? null;
@@ -123,7 +143,8 @@ const DashboardPage = ({ onLogout }: DashboardPageProps) => {
     return (
       student.name.toLowerCase().includes(search) ||
       student.grade.toLowerCase().includes(search) ||
-      student.id.toLowerCase().includes(search)
+      student.id.toLowerCase().includes(search) ||
+      student.carnet.toLowerCase().includes(search)
     );
   });
 
@@ -139,36 +160,6 @@ const DashboardPage = ({ onLogout }: DashboardPageProps) => {
       )
     : [];
 
-  const handleStudentSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    const form = event.currentTarget;
-    const formData = new FormData(form);
-
-    const name = String(formData.get("name") ?? "").trim();
-    const age = Number(formData.get("age") ?? 0);
-    const grade = String(formData.get("grade") ?? "").trim();
-    const allergies = String(formData.get("allergies") ?? "").trim();
-
-    if (!name || age <= 0 || !grade) {
-      return;
-    }
-
-    const newStudent: Student = {
-      id: `EST-${Date.now()}`,
-      name,
-      age,
-      grade,
-      allergies: allergies || "Ninguna registrada",
-      lastVisit: new Date().toISOString().slice(0, 10),
-    };
-
-    setStudents((current) => [...current, newStudent]);
-    setSelectedStudentId(newStudent.id);
-    setStudentSearch("");
-    form.reset();
-  };
-
   const handleMedicationSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -183,12 +174,13 @@ const DashboardPage = ({ onLogout }: DashboardPageProps) => {
     const medicine = String(formData.get("medicine") ?? "").trim();
     const doses = Number(formData.get("doses") ?? 0);
 
-    if (!medicine || doses <= 0) {
+    if (!medicine || !Number.isFinite(doses) || doses <= 0) {
+      window.alert("Introduce el medicamento y una cantidad válida.");
       return;
     }
 
     const newReport: MedicationReport = {
-      id: `REP-${Date.now()}`,
+      id: crypto.randomUUID(),
       studentId: selectedStudent.id,
       studentName: selectedStudent.name,
       medicine,
@@ -217,11 +209,12 @@ const DashboardPage = ({ onLogout }: DashboardPageProps) => {
     const note = String(formData.get("note") ?? "").trim();
 
     if (!reason || !note) {
+      window.alert("Completa el motivo y la nota clínica.");
       return;
     }
 
     const newEntry: ClinicalEntry = {
-      id: `HIST-${Date.now()}`,
+      id: crypto.randomUUID(),
       studentId: selectedStudent.id,
       studentName: selectedStudent.name,
       date: new Date().toLocaleString("es-BO"),
@@ -240,11 +233,10 @@ const DashboardPage = ({ onLogout }: DashboardPageProps) => {
       <main className="dashboard-container">
         <section className="dashboard-welcome">
           <p className="dashboard-label">PANEL DE ENFERMERÍA</p>
-
           <h1>Panel de control</h1>
-
           <p>
-            Gestiona estudiantes, medicamentos e historias clínicas.
+            Consulta estudiantes registrados y gestiona sus reportes e
+            historias clínicas.
           </p>
         </section>
 
@@ -259,14 +251,12 @@ const DashboardPage = ({ onLogout }: DashboardPageProps) => {
 
         <section className="dashboard-content">
           <section className="dashboard-students">
-            <h2>Estudiantes</h2>
-
-            <StudentForm onSubmit={handleStudentSubmit} />
+            <h2>Estudiantes registrados</h2>
 
             <div className="student-search">
               <input
                 type="text"
-                placeholder="Buscar estudiante por nombre, curso o ID..."
+                placeholder="Buscar por nombre, curso, ID o carnet..."
                 value={studentSearch}
                 onChange={(event) => setStudentSearch(event.target.value)}
               />
@@ -280,8 +270,16 @@ const DashboardPage = ({ onLogout }: DashboardPageProps) => {
               />
             ) : (
               <div className="empty-state">
-                <h3>No se encontraron estudiantes</h3>
-                <p>Intenta buscar por nombre, curso o ID.</p>
+                <h3>
+                  {students.length === 0
+                    ? "No hay estudiantes activos"
+                    : "No se encontraron estudiantes"}
+                </h3>
+                <p>
+                  {students.length === 0
+                    ? "El administrador debe registrar estudiantes y mantenerlos activos para que aparezcan aquí."
+                    : "Prueba con otro nombre, curso o número de carnet."}
+                </p>
               </div>
             )}
           </section>
@@ -293,7 +291,8 @@ const DashboardPage = ({ onLogout }: DashboardPageProps) => {
               <div className="empty-state">
                 <h3>Selecciona un estudiante</h3>
                 <p>
-                  Selecciona un estudiante para consultar sus datos y registros.
+                  Selecciona un estudiante para consultar sus datos y
+                  registros.
                 </p>
               </div>
             )}
@@ -313,7 +312,8 @@ const DashboardPage = ({ onLogout }: DashboardPageProps) => {
           {selectedStudent ? (
             <>
               <p>
-                Estudiante seleccionado: <strong>{selectedStudent.name}</strong>
+                Estudiante seleccionado:{" "}
+                <strong>{selectedStudent.name}</strong>
               </p>
 
               <div className="dashboard-medication-grid">
@@ -325,8 +325,8 @@ const DashboardPage = ({ onLogout }: DashboardPageProps) => {
             <div className="empty-state">
               <h3>Selecciona un estudiante</h3>
               <p>
-                Debes seleccionar un estudiante antes de registrar medicamentos
-                o consultar sus reportes.
+                Debes seleccionar un estudiante antes de registrar
+                medicamentos o consultar sus reportes.
               </p>
             </div>
           )}
@@ -374,7 +374,8 @@ const DashboardPage = ({ onLogout }: DashboardPageProps) => {
             ) : (
               <div className="empty-state">
                 <p>
-                  Selecciona un estudiante para consultar su historial clínico.
+                  Selecciona un estudiante para consultar su historial
+                  clínico.
                 </p>
               </div>
             )}
